@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Supplier, Product, RegProduct, RegCountry, SupplierProduct, Vsku, ComboPack, ComboSKU
+from .models import Supplier, Product, RegProduct, RegCountry, SupplierProduct, Vsku, ComboPack, ComboSKU, Vcombo
 
 
 class SupplierSerializer(serializers.ModelSerializer):
@@ -80,9 +80,9 @@ class ProductSerializer(serializers.ModelSerializer):
     产品
     """
     # 产品注册信息
-    product_reg_product = RegProductSerializer(many=True, required=False)
+    product_reg_product = RegProductSerializer(many=True, required=False, read_only=True)
     # 供应商产品
-    product_sup_product = SupplierProductSerializer(many=True, required=False)
+    product_sup_product = SupplierProductSerializer(many=True, required=False, read_only=True)
     # 虚拟sku
     product_vsku = VskuSerializer(many=True, required=False)
 
@@ -134,12 +134,23 @@ class ComboSKUSerializer(serializers.ModelSerializer):
         fields = ('id', 'sku', 'quantity', 'cn_name', 'image', 'product_id')
 
 
+class VcomboSerializer(serializers.ModelSerializer):
+    """
+    组合虚拟sku
+    """
+    class Meta:
+        model = Vcombo
+        fields = ('vsku',)
+
+
 class ComboPackSerializer(serializers.ModelSerializer):
     """
     组合产品
     """
     # 组合内产品
-    combo_pack_sku = ComboSKUSerializer(many=True, required=False)
+    combo_pack_sku = ComboSKUSerializer(many=True, required=False, read_only=True)
+    # 组合内产品
+    combo_pack_vcombo = VcomboSerializer(many=True, required=False, read_only=True)
 
     weight = serializers.SerializerMethodField()
     cost = serializers.SerializerMethodField()
@@ -166,4 +177,4 @@ class ComboPackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ComboPack
-        fields = ('id', 'combo_code', 'combo_name', 'weight', 'cost', 'company', 'combo_pack_sku', 'combo_status', 'create_time')
+        fields = ('id', 'combo_code', 'combo_name', 'weight', 'cost', 'company', 'combo_pack_sku', 'combo_pack_vcombo', 'combo_status', 'create_time')

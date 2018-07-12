@@ -9,7 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from django.db.models import Q
 
-from .models import Supplier, Product, RegProduct, RegCountry, SupplierProduct, Vsku, ComboPack, Vcombo
+from .models import Supplier, Product, RegProduct, RegCountry, SupplierProduct, Vsku, ComboPack, Vcombo, ComboSKU
 
 # Create your views here.
 
@@ -272,7 +272,7 @@ class SetDefaultSupplierView(APIView):
 
 class CheckVskuView(APIView):
     """
-    检查虚拟sku是否存在
+    检查虚拟sku(包含组合虚拟sku)是否存在
     """
 
     def post(self, request, *args, **kwargs):
@@ -280,11 +280,35 @@ class CheckVskuView(APIView):
         vsku = self.request.data
 
         # 先检查该虚拟sku是否存在
-        queryset = Vsku.objects.filter(vsku=vsku)
-        if queryset:
+        vsku_queryset = Vsku.objects.filter(vsku=vsku)
+        if vsku_queryset:
             # 如果存在，再检查是否在当前公司帐号下
-            for i in queryset:
+            for i in vsku_queryset:
                 if i.product.company == self.request.user.company:
+                    return Response(status=status.HTTP_200_OK)
+
+        # 检查该虚拟sku是否与产品sku相同
+        sku_queryset = Product.objects.filter(sku=vsku)
+        if sku_queryset:
+            # 如果存在，再检查是否在当前公司帐号下
+            for i in sku_queryset:
+                if i.company == self.request.user.company:
+                    return Response(status=status.HTTP_200_OK)
+
+        # 检查该虚拟sku是否与组合sku相同
+        combo_queryset = ComboPack.objects.filter(combo_code=vsku)
+        if combo_queryset:
+            # 如果存在，再检查是否在当前公司帐号下
+            for i in combo_queryset:
+                if i.company == self.request.user.company:
+                    return Response(status=status.HTTP_200_OK)
+
+        # 检查该虚拟sku是否与虚拟组合sku相同
+        vcombo_queryset = Vcombo.objects.filter(vsku=vsku)
+        if vcombo_queryset:
+            # 如果存在，再检查是否在当前公司帐号下
+            for i in vcombo_queryset:
+                if i.combo_pack.company == self.request.user.company:
                     return Response(status=status.HTTP_200_OK)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -311,25 +335,66 @@ class ComboPackViewSet(mixins.ListModelMixin,
         # 获取当前用户所在公司的数据
         return ComboPack.objects.filter(company=self.request.user.company)
 
+    # 重写update方法
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
 
-class CheckComboVskuView(APIView):
-    """
-    检查组合虚拟sku是否存在
-    """
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
 
-    def post(self, request, *args, **kwargs):
+        combo_id = self.request.data['id']  # 获取组合产品id
+        add_vsku = self.request.data['add_vsku']  # 获取新增虚拟sku
+        remove_vsku = self.request.data['remove_vsku']  # 删除虚拟sku
+        add_combo_sku = self.request.data['add_combo_sku']  # 新增组合内sku
+        edit_combo_sku = self.request.data['edit_combo_sku']  # 编辑组合内sku
+        remove_combo_sku = self.request.data['remove_combo_sku']  # 删除组合内sku
 
-        combo_vsku = self.request.data
+        # 删除组合虚拟sku
+        if remove_vsku:
+            q = Q()
+            q.connector = 'OR'
+            for i in remove_vsku:
+                q.children.append(('vsku', i))
+            queryset = Vcombo.objects.filter(combo_pack=combo_id).filter(q)
+            queryset.delete()
 
-        # 先检查该组合虚拟sku是否存在
-        queryset = Vcombo.objects.filter(vsku=combo_vsku)
-        if queryset:
-            # 如果存在，再检查是否在当前公司帐号下
-            for i in queryset:
-                if i.combo_pack.company == self.request.user.company:
-                    return Response(status=status.HTTP_200_OK)
+        # 批量增加组合虚拟sku
+        if add_vsku:
+            add_list = []
+            cp = ComboPack.objects.get(id=combo_id)
+            for i in add_vsku:
+                add_list.append(Vcombo(vsku=i, combo_pack=cp))
+            Vcombo.objects.bulk_create(add_list)
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        # 删除组合sku
+        if remove_combo_sku:
+            q = Q()
+            q.connector = 'OR'
+            for i in remove_combo_sku:
+                q.children.append(('sku', i))
+            queryset = ComboSKU.objects.filter(combo_pack=combo_id).filter(q)
+            queryset.delete()
+
+        # 批量增加组合sku
+        if add_combo_sku:
+            combosku_add_list = []
+            cp = ComboPack.objects.get(id=combo_id)
+            for i in add_combo_sku:
+                combosku_add_list.append(ComboSKU(sku=i['sku'], quantity=i['quantity'], combo_pack=cp))
+            ComboSKU.objects.bulk_create(combosku_add_list)
+
+        # 修改组合sku数量
+        if edit_combo_sku:
+            for i in edit_combo_sku:
+                ComboSKU.objects.filter(combo_pack=combo_id).filter(sku=i['sku']).update(quantity=i['quantity'])
+
+        return Response(serializer.data)
 
 
 class BaseProductViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

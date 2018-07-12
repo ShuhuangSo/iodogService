@@ -19,7 +19,7 @@ from rest_framework.documentation import include_docs_urls
 from rest_framework_jwt.views import obtain_jwt_token
 
 from product.views import SupplierListViewSet, SupplierBulkOperation, CheckSupplierName, ProductViewSet, RegProductView
-from product.views import SupplierProductViewSet, SetDefaultSupplierView, CheckVskuView, ComboPackViewSet, CheckComboVskuView, BaseProductViewSet
+from product.views import SupplierProductViewSet, SetDefaultSupplierView, CheckVskuView, ComboPackViewSet, BaseProductViewSet
 
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -49,6 +49,5 @@ urlpatterns = [
     url(r'^api/set-default-supplier/', SetDefaultSupplierView.as_view(), name='set-default-supplier'),
     # 检查虚拟sku是否存在
     url(r'^api/vsku-check/', CheckVskuView.as_view(), name='vsku-check'),
-    # 检查组合虚拟sku是否存在
-    url(r'^api/combovsku-check/', CheckComboVskuView.as_view(), name='combovsku-check'),
+
 ]
