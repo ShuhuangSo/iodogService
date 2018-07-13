@@ -403,6 +403,7 @@ class BaseProductViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     queryset = Product.objects.all()
     serializer_class = BaseProductSerializer  # 序列化
+    pagination_class = DefaultPagination  # 分页
 
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)  # 过滤,搜索
     filter_fields = ('sku',)  # 配置过滤字段
