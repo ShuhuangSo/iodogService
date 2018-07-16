@@ -20,7 +20,7 @@ from rest_framework_jwt.views import obtain_jwt_token
 
 from product.views import SupplierListViewSet, SupplierBulkOperation, CheckSupplierName, ProductViewSet, RegProductView
 from product.views import SupplierProductViewSet, SetDefaultSupplierView, CheckVskuView, ComboPackViewSet, BaseProductViewSet
-from product.views import ComboBulkOperation
+from product.views import ComboBulkOperation, ProductBulkOperation, RegProductBulkOperation
 
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -46,11 +46,15 @@ urlpatterns = [
     url(r'^api/suppliers-check/', CheckSupplierName.as_view(), name='suppliers-check'),
     # 新增注册产品/添加注册国家
     url(r'^api/reg-product/', RegProductView.as_view(), name='reg-product'),
+    # 批量操作新增注册产品/添加注册国家
+    url(r'^api/reg-product-bulk/', RegProductBulkOperation.as_view(), name='reg-product-bulk'),
     # 设置默认供应商
     url(r'^api/set-default-supplier/', SetDefaultSupplierView.as_view(), name='set-default-supplier'),
     # 检查虚拟sku是否存在
     url(r'^api/vsku-check/', CheckVskuView.as_view(), name='vsku-check'),
     # 组合sku批量操作
     url(r'^api/combopacks-bulk/', ComboBulkOperation.as_view(), name='combopacks-bulk'),
+    # 产品批量操作
+    url(r'^api/products-bulk/', ProductBulkOperation.as_view(), name='products-bulk'),
 
 ]

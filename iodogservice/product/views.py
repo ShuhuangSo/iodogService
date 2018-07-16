@@ -206,6 +206,50 @@ class ProductViewSet(mixins.ListModelMixin,
         return Response(serializer.data)
 
 
+class ProductBulkOperation(APIView):
+    """
+    批量删除/修改产品
+    """
+    def post(self, request, *args, **kwargs):
+        """
+        批量删除
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+
+        ids = self.request.data  # 获取删除id
+        q = Q()
+        q.connector = 'OR'
+        for i in ids:
+            q.children.append(('id', i))
+        queryset = Product.objects.filter(q)
+        queryset.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def patch(self, request, *args, **kwargs):
+        """
+        批量启用/停用产品
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+
+        ids = self.request.data['ids']
+        product_status = self.request.data['status']
+
+        q = Q()
+        q.connector = 'OR'
+        for i in ids:
+            q.children.append(('id', i))
+        queryset = Product.objects.filter(q)
+        queryset.update(status=product_status)
+        return Response(status=status.HTTP_200_OK)
+
+
 class RegProductView(APIView):
     """
     新增注册产品/添加注册国家
@@ -230,6 +274,38 @@ class RegProductView(APIView):
         reg_country.reg_status = 'REGING'
         reg_country.reg_product = reg_product
         reg_country.save()
+
+        return Response(status=status.HTTP_201_CREATED)
+
+
+class RegProductBulkOperation(APIView):
+    """
+    批量新增注册产品/添加注册国家
+    """
+    def post(self, request, *args, **kwargs):
+        product_ids = request.data['product']
+        for product_id in product_ids:
+            product = Product.objects.get(id=product_id)
+            # 产品是否已经注册
+            is_reg = RegProduct.objects.filter(product=product_id).count()
+            # 产品如果未注册物流公司,则先注册物流公司
+            if not is_reg:
+                reg_product = RegProduct()
+                reg_product.logistics_company = request.data['logistics_company']
+                reg_product.product = product
+                reg_product.save()
+            reg_product = RegProduct.objects.get(product=product)
+
+            is_country_reg = RegCountry.objects.filter(reg_product=reg_product).filter(country_code=request.data['country_code']).count()
+            # 检查该国家没有注册过，才进行注册
+            if not is_country_reg:
+                # 注册国家
+                reg_country = RegCountry()
+                reg_country.country_code = request.data['country_code']
+                reg_country.import_value = request.data['import_value']
+                reg_country.reg_status = 'REGING'
+                reg_country.reg_product = reg_product
+                reg_country.save()
 
         return Response(status=status.HTTP_201_CREATED)
 
