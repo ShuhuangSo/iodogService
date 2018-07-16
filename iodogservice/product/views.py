@@ -70,7 +70,7 @@ class SupplierListViewSet(mixins.ListModelMixin,
 
 class SupplierBulkOperation(APIView):
     """
-    批量删除/修改
+    批量删除/修改供应商
     """
     def post(self, request, *args, **kwargs):
         """
@@ -149,7 +149,7 @@ class ProductViewSet(mixins.ListModelMixin,
     pagination_class = DefaultPagination  # 分页
 
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)  # 过滤,搜索,排序
-    filter_fields = ('status',)  # 配置过滤字段
+    filter_fields = ('status', 'product_reg_product__reg_product_reg_country__reg_status')  # 配置过滤字段
     search_fields = ('sku', 'cn_name')  # 配置搜索字段
     ordering_fields = ('create_time',)  # 配置排序字段
 
@@ -227,7 +227,7 @@ class RegProductView(APIView):
         reg_country = RegCountry()
         reg_country.country_code = request.data['country_code']
         reg_country.import_value = request.data['import_value']
-        reg_country.reg_status = 'CHECKING'
+        reg_country.reg_status = 'REGING'
         reg_country.reg_product = reg_product
         reg_country.save()
 
@@ -335,6 +335,40 @@ class ComboPackViewSet(mixins.ListModelMixin,
         # 获取当前用户所在公司的数据
         return ComboPack.objects.filter(company=self.request.user.company)
 
+    # 重写create方法
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        # 获取当前用户的公司
+        company = self.request.user.company
+
+        v_combo = data['combo_pack_vcombo']
+        combo_sku = data['combo_pack_sku']
+
+        # 增加组合sku
+        if data:
+            combo_pack = ComboPack()
+            combo_pack.combo_code = request.data['combo_code']
+            combo_pack.combo_name = request.data['combo_name']
+            combo_pack.company = company
+            combo_pack.save()
+        new_combo_pack = ComboPack.objects.get(combo_code=data['combo_code'])
+
+        # 批量增加组合虚拟sku
+        if v_combo:
+            v_add_list = []
+            for i in v_combo:
+                v_add_list.append(Vcombo(vsku=i, combo_pack=new_combo_pack))
+            Vcombo.objects.bulk_create(v_add_list)
+
+        # 批量增加组合内sku
+        if combo_sku:
+            sku_add_list = []
+            for i in combo_sku:
+                sku_add_list.append(ComboSKU(sku=i['sku'], quantity=i['quantity'], combo_pack=new_combo_pack))
+            ComboSKU.objects.bulk_create(sku_add_list)
+
+        return Response(status=status.HTTP_201_CREATED)
+
     # 重写update方法
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
@@ -395,6 +429,50 @@ class ComboPackViewSet(mixins.ListModelMixin,
                 ComboSKU.objects.filter(combo_pack=combo_id).filter(sku=i['sku']).update(quantity=i['quantity'])
 
         return Response(serializer.data)
+
+
+class ComboBulkOperation(APIView):
+    """
+    批量删除/修改组合
+    """
+    def post(self, request, *args, **kwargs):
+        """
+        批量删除
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+
+        ids = self.request.data  # 获取删除id
+        q = Q()
+        q.connector = 'OR'
+        for i in ids:
+            q.children.append(('id', i))
+        queryset = ComboPack.objects.filter(q)
+        queryset.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def patch(self, request, *args, **kwargs):
+        """
+        批量启用/停用组合
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+
+        ids = self.request.data['ids']
+        combo_status = self.request.data['combo_status']
+
+        q = Q()
+        q.connector = 'OR'
+        for i in ids:
+            q.children.append(('id', i))
+        queryset = ComboPack.objects.filter(q)
+        queryset.update(combo_status=combo_status)
+        return Response(status=status.HTTP_200_OK)
 
 
 class BaseProductViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

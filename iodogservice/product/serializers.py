@@ -171,7 +171,7 @@ class ComboPackSerializer(serializers.ModelSerializer):
         total_cost = 0
         for i in comboSKU:
             product = Product.objects.get(sku=i.sku)
-            if product.weight:
+            if product.cost:
                 total_cost += product.cost*i.quantity
         return total_cost if total_cost else ''
 

@@ -135,10 +135,16 @@ class RegCountry(models.Model):
     """
     产品注册国家
     """
+    REG_STATUS = (
+        ('ON_SALE', '已发布'),
+        ('CHECKING', '待审核'),
+        ('REGING', '注册中'),
+        ('FAIL', '审核失败'),
+    )
     country_code = models.CharField(max_length=5, verbose_name='注册国家编码', help_text='注册国家编码')
     import_value = models.FloatField(verbose_name='进口申报价值', help_text='进口申报价值')
     import_rate = models.FloatField(null=True, blank=True, verbose_name='进口关税率', help_text='进口关税率')
-    reg_status = models.CharField(max_length=10, verbose_name='产品注册状态', help_text='产品注册状态')
+    reg_status = models.CharField(max_length=10, choices=REG_STATUS, verbose_name='产品注册状态', help_text='产品注册状态')
     reg_product = models.ForeignKey(RegProduct, related_name='reg_product_reg_country', null=True, verbose_name='对应注册产品', help_text='对应注册产品')
 
     class Meta:
@@ -163,6 +169,7 @@ class ComboPack(models.Model):
     class Meta:
         verbose_name = '组合产品'
         verbose_name_plural = verbose_name
+        ordering = ['-create_time']
 
     def __str__(self):
 
