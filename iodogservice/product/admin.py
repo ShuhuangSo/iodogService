@@ -16,9 +16,9 @@ class SupplierAdmin(admin.ModelAdmin):
 
 @admin.register(SupplierProduct)
 class SupplierProductAdmin(admin.ModelAdmin):
-    list_display = ['primary_supplier', 'buy_url', 'create_time', 'supplier']
+    list_display = ['primary_supplier', 'buy_url', 'create_time', 'product', 'supplier']
     list_filter = ['primary_supplier', 'supplier']
-    search_fields = ['supplier']
+    search_fields = ['supplier', 'product']
 
 
 @admin.register(Product)

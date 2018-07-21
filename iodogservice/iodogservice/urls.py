@@ -20,7 +20,7 @@ from rest_framework_jwt.views import obtain_jwt_token
 
 from product.views import SupplierListViewSet, SupplierBulkOperation, CheckSupplierName, ProductViewSet, RegProductView
 from product.views import SupplierProductViewSet, SetDefaultSupplierView, CheckVskuView, ComboPackViewSet, BaseProductViewSet
-from product.views import ComboBulkOperation, ProductBulkOperation, RegProductBulkOperation
+from product.views import ComboBulkOperation, ProductBulkOperation, RegProductBulkOperation, ProductBulkImport
 
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -56,5 +56,7 @@ urlpatterns = [
     url(r'^api/combopacks-bulk/', ComboBulkOperation.as_view(), name='combopacks-bulk'),
     # 产品批量操作
     url(r'^api/products-bulk/', ProductBulkOperation.as_view(), name='products-bulk'),
+    # 产品批量导入
+    url(r'^api/import-product/', ProductBulkImport.as_view(), name='import-product'),
 
 ]

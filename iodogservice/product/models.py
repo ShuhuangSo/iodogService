@@ -11,7 +11,7 @@ class Supplier(models.Model):
     """
 
     supplier_name = models.CharField(max_length=30, verbose_name='供应商名称', help_text='供应商名称')
-    buy_way = models.CharField(max_length=20, verbose_name='采购渠道', help_text='采购渠道')
+    buy_way = models.CharField(null=True, blank=True, max_length=20, verbose_name='采购渠道', help_text='采购渠道')
     qq = models.CharField(null=True, blank=True, default='', max_length=20, verbose_name='联系qq号码', help_text='联系qq号码')
     phone = models.CharField(null=True, blank=True, default='', max_length=20, verbose_name='联系电话', help_text='联系电话')
     address = models.CharField(null=True, blank=True, default='', max_length=100, verbose_name='地址', help_text='地址')
@@ -45,7 +45,7 @@ class Product(models.Model):
     sku = models.CharField(max_length=30, verbose_name='产品编码', help_text='产品编码')
     cn_name = models.CharField(max_length=60, verbose_name='中文名称', help_text='中文名称')
     image = models.ImageField(null=True, blank=True, max_length=200, verbose_name='产品图片', help_text='产品图片')
-    status = models.CharField(max_length=10, choices=PRODUCT_STATUS, verbose_name='产品状态', help_text='产品状态')
+    status = models.CharField(max_length=10, choices=PRODUCT_STATUS, default='ON_SALE', verbose_name='产品状态', help_text='产品状态')
     cost = models.FloatField(verbose_name='成本价', help_text='成本价')
     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间', help_text='创建时间')
     en_name = models.CharField(null=True, blank=True, max_length=80, verbose_name='英文名称', help_text='英文名称')
@@ -90,7 +90,7 @@ class SupplierProduct(models.Model):
 
     def __str__(self):
 
-        return self.sku
+        return self.supplier
 
 
 class Vsku(models.Model):

@@ -8,6 +8,7 @@ from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from django.db.models import Q
+import json
 
 from .models import Supplier, Product, RegProduct, RegCountry, SupplierProduct, Vsku, ComboPack, Vcombo, ComboSKU
 
@@ -231,7 +232,7 @@ class ProductBulkOperation(APIView):
 
     def patch(self, request, *args, **kwargs):
         """
-        批量启用/停用产品
+        批量编辑：修改产品状态
         :param request:
         :param args:
         :param kwargs:
@@ -248,6 +249,172 @@ class ProductBulkOperation(APIView):
         queryset = Product.objects.filter(q)
         queryset.update(status=product_status)
         return Response(status=status.HTTP_200_OK)
+
+
+class ProductBulkImport(APIView):
+    """
+        批量导入产品
+        """
+
+    def post(self, request, *args, **kwargs):
+        """
+        批量导入产品
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+
+        data = self.request.data  # 获取产品数据
+        company = self.request.user.company
+        key = ['sku', 'cn_name', 'cost', 'supplier', 'en_name', 'declared_value', 'length', 'width', 'heigth', 'weight', 'url', 'is_battery', 'is_jack', 'is_brand', 'brand_name', 'brand_model']
+        # 将数据转为对应的字典,从第二行开始
+        before_list_p = [dict(zip(key, v)) for v in data[1:]]
+        list_p = []
+        list_sku = []
+        # 检查数据有效性
+        err_list = []
+        for i in before_list_p:
+            if i.__contains__('sku') and i.__contains__('cn_name') and i.__contains__('cost'):
+                if not i['sku'] or not i['cn_name'] or not i['cost']:
+                    err_item = {}
+                    err_item.update({'sku': i['sku']})
+                    err_item.update({'msg': '必填项出错'})
+                    err_list.append(err_item)
+                    continue
+
+                is_exist = Product.objects.filter(sku=i['sku'].strip()).count()
+                if is_exist:
+                    err_item = {}
+                    err_item.update({'sku': i['sku']})
+                    err_item.update({'msg': '该sku已存在'})
+                    err_list.append(err_item)
+                    continue
+
+                if i['sku'].strip() in list_sku:
+                    err_item = {}
+                    err_item.update({'sku': i['sku']})
+                    err_item.update({'msg': '该sku重复导入'})
+                    err_list.append(err_item)
+                    continue
+                list_p.append(i)
+                list_sku.append(i['sku'].strip())
+            else:
+                err_item = {}
+                err_item.update({'msg': '模板表格出错'})
+                err_list.append(err_item)
+
+        fail_count = len(err_list)
+        success_count = len(list_p)
+        all_data = {}
+        all_data.update({'err_list': err_list})
+        all_data.update({'fail_count': fail_count})
+        all_data.update({'success_count': success_count})
+        if not list_p:
+            return Response(all_data, status=status.HTTP_201_CREATED)
+
+        add_list = []
+        # sku对应的供应商表
+        supplier_dic = {}
+        for i in list_p:
+            if i['supplier']:
+                if i['supplier'].strip() != '':
+                    supplier_dic[i['sku'].strip()] = i['supplier'].strip()
+            if i.__contains__('sku'):
+                sku = i['sku'].strip()
+            else:
+                sku = None
+            if i.__contains__('cn_name'):
+                cn_name = i['cn_name'].strip() if i['cn_name'] else None
+            else:
+                cn_name = None
+            if i.__contains__('cost'):
+                cost = i['cost']
+            else:
+                cost = None
+            if i.__contains__('en_name'):
+                en_name = i['en_name'].strip() if i['en_name'] else None
+            else:
+                en_name = None
+            if i.__contains__('declared_value'):
+                declared_value = i['declared_value']
+            else:
+                declared_value = None
+            if i.__contains__('length'):
+                length = i['length']
+            else:
+                length = None
+            if i.__contains__('width'):
+                width = i['width']
+            else:
+                width = None
+            if i.__contains__('heigth'):
+                heigth = i['heigth']
+            else:
+                heigth = None
+            if i.__contains__('weight'):
+                weight = i['weight']
+            else:
+                weight = None
+            if i.__contains__('url'):
+                url = i['url'].strip()
+            else:
+                url = None
+            if i.__contains__('is_battery'):
+                is_battery = True if i['is_battery'] == '1' else False
+            else:
+                is_battery = None
+            if i.__contains__('is_jack'):
+                is_jack = True if i['is_jack'] == '1' else False
+            else:
+                is_jack = None
+            if i.__contains__('is_brand'):
+                is_brand = True if i['is_brand'] == '1' else False
+            else:
+                is_brand = None
+            if i.__contains__('brand_name'):
+                brand_name = i['brand_name'].strip() if i['brand_name'] else None
+            else:
+                brand_name = None
+            if i.__contains__('brand_model'):
+                brand_model = i['brand_model'].strip() if i['brand_model'] else None
+            else:
+                brand_model = None
+            add_list.append(Product(
+                sku=sku,
+                cn_name=cn_name if cn_name else '',
+                cost=cost,
+                en_name=en_name if en_name else '',
+                declared_value=declared_value,
+                length=length if length else None,
+                width=width if width else None,
+                heigth=heigth if heigth else None,
+                weight=weight if weight else None,
+                url=url if url else '',
+                is_battery=True if is_battery == 1 else False,
+                is_jack=True if is_jack == 1 else False,
+                is_brand=True if is_brand == 1 else False,
+                brand_name=brand_name if brand_name else '',
+                brand_model=brand_model if brand_model else '',
+                company=company
+            ))
+        Product.objects.bulk_create(add_list)
+
+        supplier_add_list = []
+        for k, v in supplier_dic.items():
+            queryset = Supplier.objects.filter(supplier_name=v).count()
+            # 如果供应商不存在，则创建供应商
+            if not queryset:
+                new_supplier = Supplier()
+                new_supplier.company = company
+                new_supplier.supplier_name = v
+                new_supplier.save()
+            product = Product.objects.get(sku=k)
+            supplier = Supplier.objects.get(supplier_name=v)
+            supplier_add_list.append(SupplierProduct(product=product, supplier=supplier, primary_supplier=True))
+        SupplierProduct.objects.bulk_create(supplier_add_list)
+
+        return Response(all_data, status=status.HTTP_201_CREATED)
 
 
 class RegProductView(APIView):
