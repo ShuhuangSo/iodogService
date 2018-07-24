@@ -283,7 +283,9 @@ class ProductBulkImport(APIView):
                     err_list.append(err_item)
                     continue
 
-                is_exist = Product.objects.filter(sku=i['sku'].strip()).count()
+                # 检查sku是否存在
+                st = SkuTool()
+                is_exist = st.check_sku_exist(i['sku'].strip(), company)
                 if is_exist:
                     err_item = {}
                     err_item.update({'sku': i['sku']})
@@ -413,6 +415,202 @@ class ProductBulkImport(APIView):
             supplier = Supplier.objects.get(supplier_name=v)
             supplier_add_list.append(SupplierProduct(product=product, supplier=supplier, primary_supplier=True))
         SupplierProduct.objects.bulk_create(supplier_add_list)
+
+        return Response(all_data, status=status.HTTP_201_CREATED)
+
+
+class VskuBulkImport(APIView):
+    """
+    虚拟sku批量导入
+    """
+
+    def post(self, request, *args, **kwargs):
+        """
+        虚拟sku批量导入
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        data = self.request.data  # 获取上传数据
+        company = self.request.user.company
+
+        err_list = []  # 错误列表
+        all_sku_list = []
+        # 检查sku是否存在
+        st = SkuTool()
+        for item in data[1:]:
+            sku_is_exist = st.check_sku_exist(item[0].strip(), company)
+            if not sku_is_exist:
+                err_item = {}
+                err_item.update({'sku': item[0]})
+                err_item.update({'msg': 'sku不存在'})
+                err_list.append(err_item)
+                continue
+            sku_list = []
+            sku_list.append(item[0].strip())
+            for n in item[1:]:
+                is_exist = st.check_sku_exist(n.strip(), company)
+                if is_exist:
+                    err_item = {}
+                    err_item.update({'sku': n})
+                    err_item.update({'msg': '该虚拟sku已存在'})
+                    err_list.append(err_item)
+                    continue
+                sku_list.append(n.strip())
+            if len(sku_list) > 1:
+                all_sku_list.append(sku_list)
+
+        # 批量新增虚拟sku
+        add_list = []
+        for item in all_sku_list:
+            product = Product.objects.filter(company=company).get(sku=item[0])
+            for n in item[1:]:
+                add_list.append(Vsku(vsku=n, product=product))
+        Vsku.objects.bulk_create(add_list)
+
+        success_count = len(all_sku_list)
+        fail_count = len(data)-1-success_count
+        all_data = {}
+        all_data.update({'err_list': err_list})
+        all_data.update({'fail_count': fail_count})
+        all_data.update({'success_count': success_count})
+        return Response(all_data, status=status.HTTP_201_CREATED)
+
+
+class ComboBulkImport(APIView):
+    """
+    组合批量导入
+    """
+
+    def post(self, request, *args, **kwargs):
+        """
+        组合批量导入
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        data = self.request.data  # 获取上传数据
+        company = self.request.user.company
+
+        err_list = []  # 错误列表
+        all_combopack_list = []
+        # 检查组合sku是否存在
+        st = SkuTool()
+        combo_code_list = []
+        for item in data[1:]:
+            # 检查组合编码是否为空
+            if not item[0]:
+                err_item = {}
+                err_item.update({'sku': item[0]})
+                err_item.update({'msg': '组合编码不能为空'})
+                err_list.append(err_item)
+                continue
+
+            # 检查组合编码是否重复
+            if item[0] in combo_code_list:
+                err_item = {}
+                err_item.update({'sku': item[0]})
+                err_item.update({'msg': '组合编码重复'})
+                err_list.append(err_item)
+                continue
+            combo_code_list.append(item[0])
+
+            combo_is_exist = st.check_sku_exist(item[0].strip(), company)
+            # 检查组合编码是否存在
+            if combo_is_exist:
+                err_item = {}
+                err_item.update({'sku': item[0]})
+                err_item.update({'msg': '组合编码已存在'})
+                err_list.append(err_item)
+                continue
+
+            # 检查组合内sku是否重复
+            inside_sku_list = []
+            inside_sku_duplicate = False
+            for i in item[2:]:
+                if item[2:].index(i) % 2 == 0:
+                    inside_sku_list.append(i)
+                    if item[2:].count(i) > 1:
+                        inside_sku_duplicate = True
+                        err_item = {}
+                        err_item.update({'sku': i})
+                        err_item.update({'msg': '组合内SKU重复'})
+                        err_list.append(err_item)
+            if inside_sku_duplicate:
+                continue
+
+            # 检查组合内sku是否存在
+            inside_sku_invalid = False
+            for i in inside_sku_list:
+                if not i:
+                    err_item = {}
+                    err_item.update({'sku': i})
+                    err_item.update({'msg': '组合内SKU为空'})
+                    err_list.append(err_item)
+                    inside_sku_invalid = True
+                    break
+                sku_is_exist = Product.objects.filter(sku=i, company=company).count()
+                if not sku_is_exist:
+                    err_item = {}
+                    err_item.update({'sku': i})
+                    err_item.update({'msg': '组合内SKU不存在'})
+                    err_list.append(err_item)
+                    inside_sku_invalid = True
+            if inside_sku_invalid:
+                continue
+
+            # 获取组合内产品数据
+            inside_skus = []
+            for i in item[2:]:
+                if item[2:].index(i) % 2 == 0:
+                    inside_item = {}
+                    inside_item.update({'sku': i})
+                else:
+                    inside_item.update({'quantity': i})
+                    inside_skus.append(inside_item)
+
+            # 获取组合编码和名称
+            combo_info = {}
+            combo_info.update({'combo_code': item[0]})
+            combo_info.update({'combo_name': item[1]})
+
+            # 生成有效数据列表
+            one_group_data = {}
+            one_group_data.update({'combo_pack': combo_info})
+            one_group_data.update({'combo_skus': inside_skus})
+            all_combopack_list.append(one_group_data)
+
+        print(err_list)
+        print(all_combopack_list)
+
+        # 批量添加组合
+        combo_add_list = []
+        for i in all_combopack_list:
+            combo_code = i['combo_pack']['combo_code']
+            combo_name = i['combo_pack']['combo_name']
+            combo_add_list.append(ComboPack(combo_code=combo_code, combo_name=combo_name, company=company))
+        ComboPack.objects.bulk_create(combo_add_list)
+
+        # 批量添加组合内sku
+        for i in all_combopack_list:
+            combo_skus = i['combo_skus']
+            combo_code = i['combo_pack']['combo_code']
+            combo_pack = ComboPack.objects.get(combo_code=combo_code, company=company)
+            sku_add_list = []
+            for n in combo_skus:
+                sku = n['sku']
+                quantity = n['quantity']
+                sku_add_list.append(ComboSKU(sku=sku, quantity=quantity, combo_pack=combo_pack))
+            ComboSKU.objects.bulk_create(sku_add_list)
+
+        success_count = len(all_combopack_list)
+        fail_count = len(data) - 1 - success_count
+        all_data = {}
+        all_data.update({'err_list': err_list})
+        all_data.update({'fail_count': fail_count})
+        all_data.update({'success_count': success_count})
 
         return Response(all_data, status=status.HTTP_201_CREATED)
 
@@ -555,6 +753,47 @@ class CheckVskuView(APIView):
                     return Response(status=status.HTTP_200_OK)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class SkuTool(object):
+    """
+    检查sku是否存在，检查包括sku，虚拟sku，组合sku，虚拟组合sku
+    """
+
+    def check_sku_exist(self, to_check_sku, company):
+
+        # 先检查该虚拟sku是否存在
+        vsku_queryset = Vsku.objects.filter(vsku=to_check_sku)
+        if vsku_queryset:
+            # 如果存在，再检查是否在当前公司帐号下
+            for i in vsku_queryset:
+                if i.product.company == company:
+                    return True
+
+        # 检查该虚拟sku是否与产品sku相同
+        sku_queryset = Product.objects.filter(sku=to_check_sku)
+        if sku_queryset:
+            # 如果存在，再检查是否在当前公司帐号下
+            for i in sku_queryset:
+                if i.company == company:
+                    return True
+
+        # 检查该虚拟sku是否与组合sku相同
+        combo_queryset = ComboPack.objects.filter(combo_code=to_check_sku)
+        if combo_queryset:
+            # 如果存在，再检查是否在当前公司帐号下
+            for i in combo_queryset:
+                if i.company == company:
+                    return True
+
+        # 检查该虚拟sku是否与虚拟组合sku相同
+        vcombo_queryset = Vcombo.objects.filter(vsku=to_check_sku)
+        if vcombo_queryset:
+            # 如果存在，再检查是否在当前公司帐号下
+            for i in vcombo_queryset:
+                if i.combo_pack.company == company:
+                    return True
+        return False
 
 
 class ComboPackViewSet(mixins.ListModelMixin,
