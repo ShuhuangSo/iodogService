@@ -21,7 +21,7 @@ from rest_framework_jwt.views import obtain_jwt_token
 from product.views import SupplierListViewSet, SupplierBulkOperation, CheckSupplierName, ProductViewSet, RegProductView
 from product.views import SupplierProductViewSet, SetDefaultSupplierView, CheckVskuView, ComboPackViewSet, BaseProductViewSet
 from product.views import ComboBulkOperation, ProductBulkOperation, RegProductBulkOperation, ProductBulkImport
-from product.views import VskuBulkImport, ComboBulkImport
+from product.views import VskuBulkImport, ComboBulkImport, VcomboBulkImport, SupplierBulkImport
 
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -63,5 +63,9 @@ urlpatterns = [
     url(r'^api/import-vsku/', VskuBulkImport.as_view(), name='import-vsku'),
     # 组合产品批量导入
     url(r'^api/import-combo/', ComboBulkImport.as_view(), name='import-combo'),
+    # 虚拟组合sku批量导入
+    url(r'^api/import-vcombo/', VcomboBulkImport.as_view(), name='import-vcombo'),
+    # 供应商批量导入
+    url(r'^api/import-supplier/', SupplierBulkImport.as_view(), name='import-supplier'),
 
 ]

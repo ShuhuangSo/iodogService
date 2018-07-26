@@ -582,9 +582,6 @@ class ComboBulkImport(APIView):
             one_group_data.update({'combo_skus': inside_skus})
             all_combopack_list.append(one_group_data)
 
-        print(err_list)
-        print(all_combopack_list)
-
         # 批量添加组合
         combo_add_list = []
         for i in all_combopack_list:
@@ -612,6 +609,158 @@ class ComboBulkImport(APIView):
         all_data.update({'fail_count': fail_count})
         all_data.update({'success_count': success_count})
 
+        return Response(all_data, status=status.HTTP_201_CREATED)
+
+
+class VcomboBulkImport(APIView):
+    """
+    虚拟组合sku批量导入
+    """
+
+    def post(self, request, *args, **kwargs):
+        """
+        虚拟组合sku批量导入
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        data = self.request.data  # 获取上传数据
+        company = self.request.user.company
+
+        err_list = []  # 错误列表
+        all_sku_list = []
+        # 检查sku是否存在
+        st = SkuTool()
+        for item in data[1:]:
+            # 检查组合编码是否为空
+            if not item[0]:
+                err_item = {}
+                err_item.update({'sku': item[0]})
+                err_item.update({'msg': '组合编码不能为空'})
+                err_list.append(err_item)
+                continue
+
+            # 检查组合编码是否存在
+            sku_is_exist = st.check_sku_exist(item[0].strip(), company)
+            if not sku_is_exist:
+                err_item = {}
+                err_item.update({'sku': item[0]})
+                err_item.update({'msg': '组合编码不存在'})
+                err_list.append(err_item)
+                continue
+
+            sku_list = []
+            sku_list.append(item[0].strip())
+            for n in item[1:]:
+                if not n:
+                    continue
+                is_exist = st.check_sku_exist(n.strip(), company)
+                if is_exist:
+                    err_item = {}
+                    err_item.update({'sku': n})
+                    err_item.update({'msg': '该虚拟sku已存在'})
+                    err_list.append(err_item)
+                    continue
+                sku_list.append(n.strip())
+            if len(sku_list) > 1:
+                all_sku_list.append(sku_list)
+
+        # 批量新增虚拟组合sku
+        add_list = []
+        for item in all_sku_list:
+            combo_pack = ComboPack.objects.filter(company=company).get(combo_code=item[0])
+            for n in item[1:]:
+                add_list.append(Vcombo(vsku=n, combo_pack=combo_pack))
+        Vcombo.objects.bulk_create(add_list)
+
+        success_count = len(all_sku_list)
+        fail_count = len(data)-1-success_count
+        all_data = {}
+        all_data.update({'err_list': err_list})
+        all_data.update({'fail_count': fail_count})
+        all_data.update({'success_count': success_count})
+        return Response(all_data, status=status.HTTP_201_CREATED)
+
+
+class SupplierBulkImport(APIView):
+    """
+    供应商批量导入
+    """
+
+    def post(self, request, *args, **kwargs):
+        """
+        供应商批量导入
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        data = self.request.data  # 获取上传数据
+        company = self.request.user.company
+
+        err_list = []  # 错误列表
+        all_supplier_list = []
+        for item in data[1:]:
+            # 检查供应商是否为空
+            if not item[0]:
+                err_item = {}
+                err_item.update({'sku': item[0]})
+                err_item.update({'msg': '供应商不能为空'})
+                err_list.append(err_item)
+                continue
+
+            # 检查供应商是否存在
+            supplier_is_exist = Supplier.objects.filter(supplier_name=item[0].strip(), company=company).count()
+            if supplier_is_exist:
+                err_item = {}
+                err_item.update({'sku': item[0]})
+                err_item.update({'msg': '该供应商已存在'})
+                err_list.append(err_item)
+                continue
+
+            all_supplier_list.append(item)
+
+        key = ['supplier_name', 'buy_way', 'store_url', 'address', 'qq', 'phone', 'note']
+        # 将数据转为对应的字典,从第二行开始
+        dict_list_s = [dict(zip(key, v)) for v in all_supplier_list]
+
+        # 批量新增供应商
+        add_list = []
+        for i in dict_list_s:
+            if i.__contains__('supplier_name'):
+                supplier_name = i['supplier_name'].strip() if i['supplier_name'] else None
+            if i.__contains__('buy_way'):
+                buy_way = i['buy_way'].strip() if i['buy_way'] else None
+            if i.__contains__('store_url'):
+                store_url = i['store_url'].strip() if i['store_url'] else None
+            if i.__contains__('address'):
+                address = i['address'].strip() if i['address'] else None
+            if i.__contains__('qq'):
+                qq = i['qq'].strip() if i['qq'] else None
+            if i.__contains__('phone'):
+                phone = i['phone'].strip() if i['phone'] else None
+            if i.__contains__('note'):
+                note = i['note'].strip() if i['note'] else None
+
+            add_list.append(Supplier(
+                supplier_name=supplier_name,
+                buy_way=buy_way if buy_way else '',
+                store_url=store_url if store_url else '',
+                address=address if address else '',
+                qq=qq if qq else '',
+                phone=phone if phone else '',
+                note=note if note else '',
+                company=company
+            ))
+        Supplier.objects.bulk_create(add_list)
+
+        success_count = len(all_supplier_list)
+        fail_count = len(data)-1-success_count
+        all_data = {}
+        all_data.update({'err_list': err_list})
+        all_data.update({'fail_count': fail_count})
+        all_data.update({'success_count': success_count})
         return Response(all_data, status=status.HTTP_201_CREATED)
 
 
