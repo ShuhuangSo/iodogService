@@ -66,6 +66,31 @@ class SupplierProductSerializer(serializers.ModelSerializer):
         fields = ('id', 'buy_url', 'primary_supplier', 'create_time', 'supplier', 'buy_way')
 
 
+class SupplierProductList2Serializer(serializers.ModelSerializer):
+    """
+    供应商产品(供应商管理产品列表)
+    """
+    sku = serializers.SerializerMethodField()
+    cn_name = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+
+    # 获取产品sku编码
+    def get_sku(self, obj):
+        return obj.product.sku
+
+    # 获取产品名称
+    def get_cn_name(self, obj):
+        return obj.product.cn_name
+
+    # 获取产品图片
+    def get_image(self, obj):
+        return obj.product.image if obj.product.image else ''
+
+    class Meta:
+        model = SupplierProduct
+        fields = ('id', 'buy_url', 'primary_supplier', 'create_time', 'supplier', 'sku', 'cn_name', 'image')
+
+
 class VskuSerializer(serializers.ModelSerializer):
     """
     虚拟sku

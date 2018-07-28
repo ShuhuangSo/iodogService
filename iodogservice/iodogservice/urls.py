@@ -21,7 +21,8 @@ from rest_framework_jwt.views import obtain_jwt_token
 from product.views import SupplierListViewSet, SupplierBulkOperation, CheckSupplierName, ProductViewSet, RegProductView
 from product.views import SupplierProductViewSet, SetDefaultSupplierView, CheckVskuView, ComboPackViewSet, BaseProductViewSet
 from product.views import ComboBulkOperation, ProductBulkOperation, RegProductBulkOperation, ProductBulkImport
-from product.views import VskuBulkImport, ComboBulkImport, VcomboBulkImport, SupplierBulkImport
+from product.views import VskuBulkImport, ComboBulkImport, VcomboBulkImport, SupplierBulkImport, SupplierProductListViewSet
+from product.views import SupplierProductBulkOperation
 
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -30,6 +31,7 @@ router = DefaultRouter()
 router.register(r'api/suppliers', SupplierListViewSet, base_name='suppliers')
 router.register(r'api/products', ProductViewSet, base_name='products')
 router.register(r'api/supplier-product', SupplierProductViewSet, base_name='supplier-product')
+router.register(r'api/supplier-product-list', SupplierProductListViewSet, base_name='supplier-product-list')
 router.register(r'api/combopacks', ComboPackViewSet, base_name='combopacks')
 router.register(r'api/base-products', BaseProductViewSet, base_name='api/base-products')
 
@@ -57,6 +59,8 @@ urlpatterns = [
     url(r'^api/combopacks-bulk/', ComboBulkOperation.as_view(), name='combopacks-bulk'),
     # 产品批量操作
     url(r'^api/products-bulk/', ProductBulkOperation.as_view(), name='products-bulk'),
+    # 供应商关联产品批量操作
+    url(r'^api/supplier-products-bulk/', SupplierProductBulkOperation.as_view(), name='supplier-products-bulk'),
     # 产品批量导入
     url(r'^api/import-product/', ProductBulkImport.as_view(), name='import-product'),
     # 产品虚拟sku批量导入

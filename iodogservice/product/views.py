@@ -1,4 +1,5 @@
 from .serializers import SupplierSerializer, ProductSerializer, SupplierProductListSerializer, ComboPackSerializer, BaseProductSerializer
+from .serializers import SupplierProductList2Serializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import mixins
@@ -8,7 +9,6 @@ from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from django.db.models import Q
-import json
 
 from .models import Supplier, Product, RegProduct, RegCountry, SupplierProduct, Vsku, ComboPack, Vcombo, ComboSKU
 
@@ -83,12 +83,13 @@ class SupplierBulkOperation(APIView):
         """
 
         ids = self.request.data  # 获取删除id
-        q = Q()
-        q.connector = 'OR'
-        for i in ids:
-            q.children.append(('id', i))
-        queryset = Supplier.objects.filter(q)
-        queryset.delete()
+        if ids:
+            q = Q()
+            q.connector = 'OR'
+            for i in ids:
+                q.children.append(('id', i))
+            queryset = Supplier.objects.filter(q)
+            queryset.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -104,12 +105,13 @@ class SupplierBulkOperation(APIView):
         ids = self.request.data['ids']
         supplier_status = self.request.data['status']
 
-        q = Q()
-        q.connector = 'OR'
-        for i in ids:
-            q.children.append(('id', i))
-        queryset = Supplier.objects.filter(q)
-        queryset.update(status=supplier_status)
+        if ids:
+            q = Q()
+            q.connector = 'OR'
+            for i in ids:
+                q.children.append(('id', i))
+            queryset = Supplier.objects.filter(q)
+            queryset.update(status=supplier_status)
         return Response(status=status.HTTP_200_OK)
 
 
@@ -170,6 +172,22 @@ class ProductViewSet(mixins.ListModelMixin,
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+    # 重写destroy方法
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        # 检查该sku是否在组合sku中
+        query_combo_sku = ComboSKU.objects.filter(sku=instance.sku).count()
+        if query_combo_sku:
+            combo_sku = ComboSKU.objects.get(sku=instance.sku)
+            # 如果存在，检查是否在本公司帐号中
+            if combo_sku.combo_pack.company == self.request.user.company:
+                err = {'err': '该sku已绑定在组合中，需要解除绑定才能删除'}
+                return Response(err, status=status.HTTP_200_OK)
+
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     # 重写update方法
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
@@ -221,14 +239,35 @@ class ProductBulkOperation(APIView):
         """
 
         ids = self.request.data  # 获取删除id
-        q = Q()
-        q.connector = 'OR'
-        for i in ids:
-            q.children.append(('id', i))
-        queryset = Product.objects.filter(q)
-        queryset.delete()
+        err_list = []  # 错误信息列表
+        if ids:
+            vaild_ids = []  # 有效的id列表
+            for i in ids:
+                # 检查该sku是否在组合sku中
+                product = Product.objects.get(id=i)
+                query_combo_sku = ComboSKU.objects.filter(sku=product.sku).count()
+                if query_combo_sku:
+                    combo_sku = ComboSKU.objects.get(sku=product.sku)
+                    # 如果存在，检查是否在本公司帐号中
+                    if combo_sku.combo_pack.company == self.request.user.company:
+                        err_item = {}
+                        err_item.update({'sku': product.sku})
+                        err_item.update({'msg': '该sku已绑定在组合中，需要解除绑定才能删除'})
+                        err_list.append(err_item)
+                        continue
+                vaild_ids.append(i)
+            # 如果没有有效的id，则直接返回
+            if len(vaild_ids) == 0:
+                return Response(err_list, status=status.HTTP_200_OK)
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+            q = Q()
+            q.connector = 'OR'
+            for i in vaild_ids:
+                q.children.append(('id', i))
+            queryset = Product.objects.filter(q)
+            queryset.delete()
+
+        return Response(err_list, status=status.HTTP_200_OK)
 
     def patch(self, request, *args, **kwargs):
         """
@@ -242,12 +281,13 @@ class ProductBulkOperation(APIView):
         ids = self.request.data['ids']
         product_status = self.request.data['status']
 
-        q = Q()
-        q.connector = 'OR'
-        for i in ids:
-            q.children.append(('id', i))
-        queryset = Product.objects.filter(q)
-        queryset.update(status=product_status)
+        if ids:
+            q = Q()
+            q.connector = 'OR'
+            for i in ids:
+                q.children.append(('id', i))
+            queryset = Product.objects.filter(q)
+            queryset.update(status=product_status)
         return Response(status=status.HTTP_200_OK)
 
 
@@ -837,10 +877,50 @@ class SupplierProductViewSet(mixins.ListModelMixin,
     serializer_class = SupplierProductListSerializer  # 序列化
     pagination_class = DefaultPagination  # 分页
 
-    # filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)  # 过滤,搜索,排序
-    # filter_fields = ('status', 'buy_way')  # 配置过滤字段
-    # search_fields = ('supplier_name',)  # 配置搜索字段
-    # ordering_fields = ('create_time',)  # 配置排序字段
+
+class SupplierProductListViewSet(mixins.ListModelMixin,
+                                 mixins.CreateModelMixin,
+                                 mixins.UpdateModelMixin,
+                                 mixins.DestroyModelMixin,
+                                 mixins.RetrieveModelMixin,
+                                 viewsets.GenericViewSet):
+    """
+    供应商关联产品列表
+    """
+    queryset = SupplierProduct.objects.all()
+    serializer_class = SupplierProductList2Serializer  # 序列化
+    pagination_class = DefaultPagination  # 分页
+
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)  # 过滤,搜索,排序
+    filter_fields = ('primary_supplier', 'supplier')  # 配置过滤字段
+    search_fields = ('^product__sku', 'product__cn_name')  # 配置搜索字段
+    ordering_fields = ('create_time',)  # 配置排序字段
+
+
+class SupplierProductBulkOperation(APIView):
+    """
+    批量删除/修改供应商关联产品
+    """
+    def post(self, request, *args, **kwargs):
+        """
+        批量删除
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+
+        ids = self.request.data  # 获取删除id
+
+        if ids:
+            q = Q()
+            q.connector = 'OR'
+            for i in ids:
+                q.children.append(('id', i))
+            queryset = SupplierProduct.objects.filter(q)
+            queryset.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class SetDefaultSupplierView(APIView):
@@ -1076,12 +1156,14 @@ class ComboBulkOperation(APIView):
         """
 
         ids = self.request.data  # 获取删除id
-        q = Q()
-        q.connector = 'OR'
-        for i in ids:
-            q.children.append(('id', i))
-        queryset = ComboPack.objects.filter(q)
-        queryset.delete()
+
+        if ids:
+            q = Q()
+            q.connector = 'OR'
+            for i in ids:
+                q.children.append(('id', i))
+            queryset = ComboPack.objects.filter(q)
+            queryset.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -1097,12 +1179,13 @@ class ComboBulkOperation(APIView):
         ids = self.request.data['ids']
         combo_status = self.request.data['combo_status']
 
-        q = Q()
-        q.connector = 'OR'
-        for i in ids:
-            q.children.append(('id', i))
-        queryset = ComboPack.objects.filter(q)
-        queryset.update(combo_status=combo_status)
+        if ids:
+            q = Q()
+            q.connector = 'OR'
+            for i in ids:
+                q.children.append(('id', i))
+            queryset = ComboPack.objects.filter(q)
+            queryset.update(combo_status=combo_status)
         return Response(status=status.HTTP_200_OK)
 
 
