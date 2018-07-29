@@ -247,9 +247,8 @@ class ProductBulkOperation(APIView):
                 product = Product.objects.get(id=i)
                 query_combo_sku = ComboSKU.objects.filter(sku=product.sku).count()
                 if query_combo_sku:
-                    combo_sku = ComboSKU.objects.get(sku=product.sku)
                     # 如果存在，检查是否在本公司帐号中
-                    if combo_sku.combo_pack.company == self.request.user.company:
+                    if product.company == self.request.user.company:
                         err_item = {}
                         err_item.update({'sku': product.sku})
                         err_item.update({'msg': '该sku已绑定在组合中，需要解除绑定才能删除'})
@@ -289,6 +288,20 @@ class ProductBulkOperation(APIView):
             queryset = Product.objects.filter(q)
             queryset.update(status=product_status)
         return Response(status=status.HTTP_200_OK)
+
+
+class CheckSKU(APIView):
+    """
+    检查供SKU是否存在
+    """
+
+    def post(self, request, *args, **kwargs):
+
+        queryset = Product.objects.filter(company=self.request.user.company).filter(sku=self.request.data).count()
+        if (queryset):
+            return Response(status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ProductBulkImport(APIView):

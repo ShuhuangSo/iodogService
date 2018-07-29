@@ -22,7 +22,7 @@ from product.views import SupplierListViewSet, SupplierBulkOperation, CheckSuppl
 from product.views import SupplierProductViewSet, SetDefaultSupplierView, CheckVskuView, ComboPackViewSet, BaseProductViewSet
 from product.views import ComboBulkOperation, ProductBulkOperation, RegProductBulkOperation, ProductBulkImport
 from product.views import VskuBulkImport, ComboBulkImport, VcomboBulkImport, SupplierBulkImport, SupplierProductListViewSet
-from product.views import SupplierProductBulkOperation
+from product.views import SupplierProductBulkOperation, CheckSKU
 
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -55,6 +55,8 @@ urlpatterns = [
     url(r'^api/set-default-supplier/', SetDefaultSupplierView.as_view(), name='set-default-supplier'),
     # 检查虚拟sku是否存在
     url(r'^api/vsku-check/', CheckVskuView.as_view(), name='vsku-check'),
+    # 检查sku是否存在
+    url(r'^api/sku-is-exist-check/', CheckSKU.as_view(), name='sku-is-exist-check'),
     # 组合sku批量操作
     url(r'^api/combopacks-bulk/', ComboBulkOperation.as_view(), name='combopacks-bulk'),
     # 产品批量操作
