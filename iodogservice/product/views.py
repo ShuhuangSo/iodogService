@@ -292,14 +292,22 @@ class ProductBulkOperation(APIView):
 
 class CheckSKU(APIView):
     """
-    检查供SKU是否存在
+    检查SKU是否存在,是否已关联到供应商
     """
 
     def post(self, request, *args, **kwargs):
+        data = self.request.data
 
-        queryset = Product.objects.filter(company=self.request.user.company).filter(sku=self.request.data).count()
-        if (queryset):
-            return Response(status=status.HTTP_200_OK)
+        sku_queryset = Product.objects.filter(company=self.request.user.company).filter(sku=data['sku']).count()
+        if not sku_queryset:
+            err_msg = {'msg': '该SKU不存在!'}
+            return Response(err_msg, status=status.HTTP_200_OK)
+
+        product = Product.objects.filter(company=self.request.user.company).get(sku=data['sku'])
+        sup_queryset = SupplierProduct.objects.filter(supplier=data['supplier']).filter(product=product).count()
+        if sup_queryset:
+            err_msg = {'msg': '该SKU已关联!'}
+            return Response(err_msg, status=status.HTTP_200_OK)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 

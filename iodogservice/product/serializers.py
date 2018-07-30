@@ -88,7 +88,7 @@ class SupplierProductList2Serializer(serializers.ModelSerializer):
 
     class Meta:
         model = SupplierProduct
-        fields = ('id', 'buy_url', 'primary_supplier', 'create_time', 'supplier', 'sku', 'cn_name', 'image')
+        fields = ('id', 'buy_url', 'primary_supplier', 'create_time', 'supplier', 'product', 'sku', 'cn_name', 'image')
 
 
 class VskuSerializer(serializers.ModelSerializer):
