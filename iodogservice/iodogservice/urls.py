@@ -22,7 +22,7 @@ from product.views import SupplierListViewSet, SupplierBulkOperation, CheckSuppl
 from product.views import SupplierProductViewSet, SetDefaultSupplierView, CheckVskuView, ComboPackViewSet, BaseProductViewSet
 from product.views import ComboBulkOperation, ProductBulkOperation, RegProductBulkOperation, ProductBulkImport
 from product.views import VskuBulkImport, ComboBulkImport, VcomboBulkImport, SupplierBulkImport, SupplierProductListViewSet
-from product.views import SupplierProductBulkOperation, CheckSKU
+from product.views import SupplierProductBulkOperation, CheckSKU, CeleryTest
 
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -73,5 +73,7 @@ urlpatterns = [
     url(r'^api/import-vcombo/', VcomboBulkImport.as_view(), name='import-vcombo'),
     # 供应商批量导入
     url(r'^api/import-supplier/', SupplierBulkImport.as_view(), name='import-supplier'),
+    # test
+    url(r'^api/test/', CeleryTest.as_view(), name='test'),
 
 ]

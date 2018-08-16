@@ -9,6 +9,7 @@ from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from django.db.models import Q
+from .task import *
 
 from .models import Supplier, Product, RegProduct, RegCountry, SupplierProduct, Vsku, ComboPack, Vcombo, ComboSKU
 
@@ -831,6 +832,7 @@ class RegProductView(APIView):
     """
     def post(self, request, *args, **kwargs):
         product_id = request.data['product']
+        company = self.request.user.company
         product = Product.objects.get(id=product_id)
         # 产品是否已经注册
         is_reg = RegProduct.objects.filter(product=product_id).count()
@@ -849,6 +851,33 @@ class RegProductView(APIView):
         reg_country.reg_status = 'REGING'
         reg_country.reg_product = reg_product
         reg_country.save()
+
+        # 开始winit注册产品
+        product_list = []
+        p = {}
+        p.update({'productCode': product.sku})  # 商品编码
+        p.update({'specification': ''})  # 商品规格
+        p.update({'chineseName': product.en_name})  # 中文名称
+        p.update({'englishName': product.en_name})  # 英文名称
+        p.update({'registeredWeight': product.weight})  # 注册重量(克/g)
+        p.update({'fixedVolumeWeight': 'Y'})  # 重量体积是否固定，默认为Y
+        p.update({'registeredLength': product.length})  # 注册长度(cm)
+        p.update({'registeredWidth': product.width})  # 注册宽度(cm)
+        p.update({'registeredHeight': product.heigth})  # 注册高度(cm)
+        p.update({'branded': 'Y' if product.is_brand else 'N'})  # 是否有品牌
+        p.update({'brandedName': product.brand_name})  # 品牌名称
+        p.update({'model': product.brand_model})  # 品牌型号，当brandedname为Y时为必填
+        p.update({'displayPageUrl': product.url})  # Ebay网页展示URL
+        p.update({'remark': ''})  # 备注
+        p.update({'exportCountry': 'CN'})  # 出口国家
+        p.update({'inporCountry': request.data['country_code']})  # 进口国家
+        p.update({'inportDeclaredvalue': float(request.data['import_value'])})  # 进口申报价
+        p.update({'exportDeclaredvalue': float(request.data['import_value'])})  # 出口申报价
+        p.update({'battery': 'Y' if product.is_battery else 'N'})  # 是否有电池
+        product_list.append(p)
+
+        # 调用task任务注册
+        winit_reg_product.delay(product_list, company, request.data['country_code'])
 
         return Response(status=status.HTTP_201_CREATED)
 
@@ -1225,3 +1254,11 @@ class BaseProductViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def get_queryset(self):
         # 获取当前用户所在公司的数据
         return Product.objects.filter(company=self.request.user.company)
+
+
+class CeleryTest(APIView):
+    def get(self, request, *args, **kwargs):
+        # context = self.get_context_data(**kwargs)
+
+        # show.delay()
+        return Response('ok')

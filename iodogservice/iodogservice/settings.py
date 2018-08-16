@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_filters',
     'rest_framework',
+    'djcelery',
     'users',
     'product'
 ]
@@ -145,7 +146,25 @@ REST_FRAMEWORK = {
     )
 }
 
-
+# 配置用户认证token有效期
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=12),
 }
+
+# 任务调度celery配置
+import djcelery
+djcelery.setup_loader()
+BROKER_URL = 'redis://127.0.0.1:6379/0'
+CELERY_IMPORTS = ('product.task')
+CELERY_TIMEZONE = TIME_ZONE
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+
+# from datetime import timedelta
+#
+# CELERYBEAT_SCHEDULE = {
+#     'add-every-30-seconds': {
+#         'task': 'product.task.show',
+#         'schedule': timedelta(seconds=30),
+#         'args': ()
+#     },
+# }
