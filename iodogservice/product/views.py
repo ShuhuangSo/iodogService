@@ -10,6 +10,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from django.db.models import Q
 from .task import *
+import base64
 
 from .models import Supplier, Product, RegProduct, RegCountry, SupplierProduct, Vsku, ComboPack, Vcombo, ComboSKU
 
@@ -888,6 +889,10 @@ class RegProductBulkOperation(APIView):
     """
     def post(self, request, *args, **kwargs):
         product_ids = request.data['product']
+        company = self.request.user.company
+
+        product_list = []
+
         for product_id in product_ids:
             product = Product.objects.get(id=product_id)
             # 产品是否已经注册
@@ -910,6 +915,33 @@ class RegProductBulkOperation(APIView):
                 reg_country.reg_status = 'REGING'
                 reg_country.reg_product = reg_product
                 reg_country.save()
+
+                # 开始winit注册产品
+                p = {}
+                p.update({'productCode': product.sku})  # 商品编码
+                p.update({'specification': ''})  # 商品规格
+                p.update({'chineseName': product.en_name})  # 中文名称
+                p.update({'englishName': product.en_name})  # 英文名称
+                p.update({'registeredWeight': product.weight})  # 注册重量(克/g)
+                p.update({'fixedVolumeWeight': 'Y'})  # 重量体积是否固定，默认为Y
+                p.update({'registeredLength': product.length})  # 注册长度(cm)
+                p.update({'registeredWidth': product.width})  # 注册宽度(cm)
+                p.update({'registeredHeight': product.heigth})  # 注册高度(cm)
+                p.update({'branded': 'Y' if product.is_brand else 'N'})  # 是否有品牌
+                p.update({'brandedName': product.brand_name})  # 品牌名称
+                p.update({'model': product.brand_model})  # 品牌型号，当brandedname为Y时为必填
+                p.update({'displayPageUrl': product.url})  # Ebay网页展示URL
+                p.update({'remark': ''})  # 备注
+                p.update({'exportCountry': 'CN'})  # 出口国家
+                p.update({'inporCountry': request.data['country_code']})  # 进口国家
+                p.update({'inportDeclaredvalue': float(request.data['import_value'])})  # 进口申报价
+                p.update({'exportDeclaredvalue': float(request.data['import_value'])})  # 出口申报价
+                p.update({'battery': 'Y' if product.is_battery else 'N'})  # 是否有电池
+                product_list.append(p)
+
+        # 调用task任务注册
+        if product_list:
+            winit_reg_product.delay(product_list, company, request.data['country_code'])
 
         return Response(status=status.HTTP_201_CREATED)
 
@@ -1256,9 +1288,57 @@ class BaseProductViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Product.objects.filter(company=self.request.user.company)
 
 
-class CeleryTest(APIView):
-    def get(self, request, *args, **kwargs):
-        # context = self.get_context_data(**kwargs)
+class ProductLabelPrint(APIView):
+    """
+    打印产品标签
+    """
+    def post(self, request, *args, **kwargs):
+        """
+        打印标签
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
 
-        # show.delay()
-        return Response('ok')
+        data1 = self.request.data[0]
+        data2 = self.request.data[1]
+        data3 = self.request.data[2]
+
+        single_items = data1['singleItems']
+        label_type = data2['labelType']
+        made_in = data3['madeIn']
+
+        token = '94341349A48B822AE921257FBE74A8B4'  # 万邑通账户token
+        client_secret = 'NJG5NJFIOGMTN2MWYS00MTI2LTGYZWUTNTY1NZNHZDK1ZJCYMJE4MTIWMTI0NZUXOTC1NZK='  # 开发账户密钥
+        client_id = 'ODG1ZDHJZWITNWY1ZC00YJI1LTGYODCTY2M3OWVKNJZMYWNL'  # 开发账户id
+        app_key = '46526075@qq.com'  # 万邑联账户
+        platform = 'IODOG'  # 开发账号代码
+
+        win_it = WinIt(token, client_secret, client_id, app_key, platform)
+        res = win_it.print_product_label(single_items, label_type, made_in)
+
+        res = json.loads(res)
+        data = res['data']
+        code = res['code']
+        if code != '0':
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        barcode_file = data['itemBarcodeFile']
+        code_list = data['itemBarcodeList']
+
+        # 取第一个标签编码为pdf文件名
+        pdf_name = code_list[0]
+
+        pdf_data = base64.b64decode(barcode_file)
+
+        from django.conf import settings
+        f_name = '%s/label/%s.pdf' % (settings.MEDIA_ROOT, pdf_name)
+        file = open(f_name, "wb")
+        file.write(pdf_data)
+        file.close()
+
+        pdf_path = '%slabel/%s.pdf' % (settings.MEDIA_URL, pdf_name)
+        file_path = settings.BASE_URL + pdf_path
+
+        return Response(file_path, status=status.HTTP_200_OK)

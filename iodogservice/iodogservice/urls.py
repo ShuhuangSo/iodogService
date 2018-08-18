@@ -17,12 +17,14 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework.documentation import include_docs_urls
 from rest_framework_jwt.views import obtain_jwt_token
+from django.views.static import serve
+from django.conf import settings
 
 from product.views import SupplierListViewSet, SupplierBulkOperation, CheckSupplierName, ProductViewSet, RegProductView
 from product.views import SupplierProductViewSet, SetDefaultSupplierView, CheckVskuView, ComboPackViewSet, BaseProductViewSet
 from product.views import ComboBulkOperation, ProductBulkOperation, RegProductBulkOperation, ProductBulkImport
 from product.views import VskuBulkImport, ComboBulkImport, VcomboBulkImport, SupplierBulkImport, SupplierProductListViewSet
-from product.views import SupplierProductBulkOperation, CheckSKU, CeleryTest
+from product.views import SupplierProductBulkOperation, CheckSKU, ProductLabelPrint
 
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -42,6 +44,7 @@ urlpatterns = [
     url(r'^docs/', include_docs_urls(title='跨境狗API文档')),
     url(r'^', include(router.urls)),
     url(r'^api/login/', obtain_jwt_token),
+    url(r'^upload/(?P<path>.*)$',  serve, {"document_root": settings.MEDIA_ROOT}),
 
     # 供应商批量操作
     url(r'^api/suppliers-bulk/', SupplierBulkOperation.as_view(), name='suppliers-bulk'),
@@ -73,7 +76,7 @@ urlpatterns = [
     url(r'^api/import-vcombo/', VcomboBulkImport.as_view(), name='import-vcombo'),
     # 供应商批量导入
     url(r'^api/import-supplier/', SupplierBulkImport.as_view(), name='import-supplier'),
-    # test
-    url(r'^api/test/', CeleryTest.as_view(), name='test'),
+    # 打印产品标签
+    url(r'^api/product-print/', ProductLabelPrint.as_view(), name='product-print'),
 
 ]

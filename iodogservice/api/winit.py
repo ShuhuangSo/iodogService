@@ -111,3 +111,31 @@ class WinIt(object):
         # 发起请求
         response = requests.post(url, data=json.dumps(self.req))
         return response.text
+
+    def print_product_label(self, single_items, label_type='LZ6040', made_in='China'):
+        """
+        打印产品标签
+        :param single_items: 产品列表
+        :param label_type: 条码尺寸类型 LZ10060：100x60mm仅有单品条码； LZ7050：70x50mm，仅有单品条码； LZ6040:60x40mm，仅有单品条码
+        :param made_in: None:不显示信息在条码 China: 产地显示中国
+        :return:
+        """
+        url = 'http://openapi.winit.com.cn/openapi/service'
+        self.req.update({'action': 'winit.singleitem.label.print.v2'})
+        self.req.update({'data': {
+            'singleItems': single_items,
+            'labelType': label_type,
+            'madeIn': made_in
+        }})
+
+        # 生成签名
+        self.generate_sign(self.req, self.TOKEN, self.CLIENT_SECRET)
+
+        # 添加请求报文信息
+        self.req.update({'client_id': self.CLIENT_ID})
+        self.req.update({'client_sign': self.client_sign})
+        self.req.update({'sign': self.sign})
+
+        # 发起请求
+        response = requests.post(url, data=json.dumps(self.req))
+        return response.text

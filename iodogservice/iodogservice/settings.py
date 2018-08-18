@@ -15,6 +15,7 @@ import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_URL = 'http://172.16.127.131:8000'
 
 
 # Quick-start development settings - unsuitable for production
@@ -134,6 +135,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
+MEDIA_ROOT = os.path.join(BASE_DIR, "upload")
+MEDIA_URL = "/upload/"
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
