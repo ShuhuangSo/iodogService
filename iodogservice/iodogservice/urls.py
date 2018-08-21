@@ -25,17 +25,21 @@ from product.views import SupplierProductViewSet, SetDefaultSupplierView, CheckV
 from product.views import ComboBulkOperation, ProductBulkOperation, RegProductBulkOperation, ProductBulkImport
 from product.views import VskuBulkImport, ComboBulkImport, VcomboBulkImport, SupplierBulkImport, SupplierProductListViewSet
 from product.views import SupplierProductBulkOperation, CheckSKU, ProductLabelPrint
+from setting.views import LogisticsAuthViewSet
 
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 
-# 注册供应商列表url
+# 产品库模块
 router.register(r'api/suppliers', SupplierListViewSet, base_name='suppliers')
 router.register(r'api/products', ProductViewSet, base_name='products')
 router.register(r'api/supplier-product', SupplierProductViewSet, base_name='supplier-product')
 router.register(r'api/supplier-product-list', SupplierProductListViewSet, base_name='supplier-product-list')
 router.register(r'api/combopacks', ComboPackViewSet, base_name='combopacks')
 router.register(r'api/base-products', BaseProductViewSet, base_name='api/base-products')
+
+# 系统设置模块
+router.register(r'api/logistics-auth', LogisticsAuthViewSet, base_name='api/logistics-auth')
 
 
 urlpatterns = [

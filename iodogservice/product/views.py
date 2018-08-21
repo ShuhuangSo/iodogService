@@ -13,6 +13,7 @@ from .task import *
 import base64
 
 from .models import Supplier, Product, RegProduct, RegCountry, SupplierProduct, Vsku, ComboPack, Vcombo, ComboSKU
+from setting.models import LogisticsAuth, DevelopAuth
 
 # Create your views here.
 
@@ -1300,6 +1301,8 @@ class ProductLabelPrint(APIView):
         :param kwargs:
         :return:
         """
+        # 获取当前用户的公司
+        company = self.request.user.company
 
         data1 = self.request.data[0]
         data2 = self.request.data[1]
@@ -1309,12 +1312,20 @@ class ProductLabelPrint(APIView):
         label_type = data2['labelType']
         made_in = data3['madeIn']
 
-        token = '94341349A48B822AE921257FBE74A8B4'  # 万邑通账户token
-        client_secret = 'NJG5NJFIOGMTN2MWYS00MTI2LTGYZWUTNTY1NZNHZDK1ZJCYMJE4MTIWMTI0NZUXOTC1NZK='  # 开发账户密钥
-        client_id = 'ODG1ZDHJZWITNWY1ZC00YJI1LTGYODCTY2M3OWVKNJZMYWNL'  # 开发账户id
-        app_key = '46526075@qq.com'  # 万邑联账户
-        platform = 'IODOG'  # 开发账号代码
+        queryset = LogisticsAuth.objects.filter(company=company).count()
+        if not queryset:
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
+        logis_auth = LogisticsAuth.objects.get(company=company)
+        app_key = logis_auth.app_key  # 万邑联账户
+        token = logis_auth.token  # 万邑通账户token
+
+        develop_auth = DevelopAuth.objects.get(api_code=logis_auth.logistics_code)
+        client_id = develop_auth.client_id  # 开发账户id
+        client_secret = develop_auth.client_secret  # 开发账户密钥
+        platform = develop_auth.dp_code  # 开发账号代码
+
+        # 调用winit打印产品接口
         win_it = WinIt(token, client_secret, client_id, app_key, platform)
         res = win_it.print_product_label(single_items, label_type, made_in)
 
