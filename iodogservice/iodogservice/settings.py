@@ -163,12 +163,12 @@ CELERY_IMPORTS = ('product.task')
 CELERY_TIMEZONE = TIME_ZONE
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
-# from datetime import timedelta
-#
-# CELERYBEAT_SCHEDULE = {
-#     'add-every-30-seconds': {
-#         'task': 'product.task.show',
-#         'schedule': timedelta(seconds=30),
-#         'args': ()
-#     },
-# }
+from datetime import timedelta
+
+CELERYBEAT_SCHEDULE = {
+    '同步winit注册产品状态': {
+        'task': 'product.task.winit_syn_pstatus_service',
+        'schedule': timedelta(seconds=30),
+        'args': ()
+    },
+}

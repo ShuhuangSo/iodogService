@@ -24,7 +24,7 @@ from product.views import SupplierListViewSet, SupplierBulkOperation, CheckSuppl
 from product.views import SupplierProductViewSet, SetDefaultSupplierView, CheckVskuView, ComboPackViewSet, BaseProductViewSet
 from product.views import ComboBulkOperation, ProductBulkOperation, RegProductBulkOperation, ProductBulkImport
 from product.views import VskuBulkImport, ComboBulkImport, VcomboBulkImport, SupplierBulkImport, SupplierProductListViewSet
-from product.views import SupplierProductBulkOperation, CheckSKU, ProductLabelPrint
+from product.views import SupplierProductBulkOperation, CheckSKU, ProductLabelPrint, Test
 from setting.views import LogisticsAuthViewSet
 
 from rest_framework.routers import DefaultRouter
@@ -82,5 +82,7 @@ urlpatterns = [
     url(r'^api/import-supplier/', SupplierBulkImport.as_view(), name='import-supplier'),
     # 打印产品标签
     url(r'^api/product-print/', ProductLabelPrint.as_view(), name='product-print'),
+    # test
+    url(r'^api/product-test/', Test.as_view(), name='product-test'),
 
 ]

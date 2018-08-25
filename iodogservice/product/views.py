@@ -1291,7 +1291,7 @@ class BaseProductViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 class ProductLabelPrint(APIView):
     """
-    打印产品标签
+    打印产品标签(万邑通)
     """
     def post(self, request, *args, **kwargs):
         """
@@ -1353,3 +1353,33 @@ class ProductLabelPrint(APIView):
         file_path = settings.BASE_URL + pdf_path
 
         return Response(file_path, status=status.HTTP_200_OK)
+
+
+class Test(APIView):
+    """
+    test
+    """
+    def get(self, request, *args, **kwargs):
+
+        # queryset = Product.objects.filter(product_reg_product__reg_product_reg_country__reg_status='CHECKING')
+        # cp = []
+        # for i in queryset:
+        #     if i.company not in cp:
+        #         cp.append(i.company)
+        #
+        # for c in cp:
+            # logis_auth = LogisticsAuth.objects.get(company=c)
+            # app_key = logis_auth.app_key  # 万邑联账户
+            # token = logis_auth.token  # 万邑通账户token
+            #
+            # develop_auth = DevelopAuth.objects.get(api_code=logis_auth.logistics_code)
+            # client_id = develop_auth.client_id  # 开发账户id
+            # client_secret = develop_auth.client_secret  # 开发账户密钥
+            # platform = develop_auth.dp_code  # 开发账号代码
+            #
+            # win_it = WinIt(token, client_secret, client_id, app_key, platform)
+
+            # winit_get_product('N288CR', c)
+        winit_syn_pstatus_service()
+
+        return Response(status=status.HTTP_200_OK)
