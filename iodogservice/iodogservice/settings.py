@@ -171,4 +171,9 @@ CELERYBEAT_SCHEDULE = {
         'schedule': timedelta(seconds=30),
         'args': ()
     },
+    '同步winit产品确认数据': {
+        'task': 'product.task.winit_syn_pconfirm_service',
+        'schedule': timedelta(seconds=30),
+        'args': ()
+    },
 }
