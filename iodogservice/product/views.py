@@ -1380,6 +1380,7 @@ class Test(APIView):
             # win_it = WinIt(token, client_secret, client_id, app_key, platform)
 
             # winit_get_product('N288CR', c)
-        winit_syn_pconfirm_service()
+        from setting.task import winit_get_delivery_way
+        winit_get_delivery_way('1030042')
 
         return Response(status=status.HTTP_200_OK)

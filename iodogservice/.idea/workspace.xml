@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="331456df-58f5-4a29-bbd6-0ba34a3f4169" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/winit.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/winit.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/iodogservice/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/iodogservice/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product/task.py" beforeDir="false" afterPath="$PROJECT_DIR$/product/task.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/product/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/product/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/setting/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/setting/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/setting/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/setting/models.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,46 +19,48 @@
     <session id="1587585902">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="5" />
+          <entry key="project.closed" value="7" />
+          <entry key="project.open.time.22" value="1" />
           <entry key="project.open.time.284" value="1" />
+          <entry key="project.open.time.35" value="1" />
           <entry key="project.open.time.358" value="1" />
           <entry key="project.open.time.37" value="1" />
           <entry key="project.open.time.39" value="1" />
           <entry key="project.open.time.53" value="1" />
           <entry key="project.open.time.71" value="1" />
           <entry key="project.open.time.98" value="1" />
-          <entry key="project.opened" value="7" />
+          <entry key="project.opened" value="9" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="3510" />
+          <entry key="py" value="4301" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="3510" />
+          <entry key="Python" value="4301" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="43" />
+          <entry key="py" value="52" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="43" />
+          <entry key="Python" value="52" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/iodogservice/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="205">
-              <caret line="169" column="56" selection-start-line="169" selection-start-column="56" selection-end-line="169" selection-end-column="56" />
+            <state relative-caret-position="242">
+              <caret line="162" column="49" lean-forward="true" selection-start-line="162" selection-start-column="49" selection-end-line="162" selection-end-column="49" />
             </state>
           </provider>
         </entry>
@@ -63,8 +68,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/product/task.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="299">
-              <caret line="142" column="30" selection-start-line="142" selection-start-column="4" selection-end-line="142" selection-end-column="30" />
+            <state relative-caret-position="198">
+              <caret line="32" column="26" lean-forward="true" selection-start-line="29" selection-start-column="4" selection-end-line="32" selection-end-column="26" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -73,12 +78,13 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/iodogservice/urls.py">
+        <entry file="file://$PROJECT_DIR$/setting/task.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="313">
-              <caret line="85" column="15" lean-forward="true" selection-start-line="85" selection-start-column="15" selection-end-line="85" selection-end-column="27" />
+            <state relative-caret-position="461">
+              <caret line="103" column="27" selection-start-line="103" selection-start-column="27" selection-end-line="103" selection-end-column="27" />
               <folding>
-                <element signature="e#648#689#0" expanded="true" />
+                <element signature="e#0#23#0" expanded="true" />
+                <marker date="1535648900899" expanded="true" signature="224:225" ph="..." />
               </folding>
             </state>
           </provider>
@@ -87,8 +93,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/product/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="353">
-              <caret line="1384" column="50" lean-forward="true" selection-start-line="1384" selection-start-column="50" selection-end-line="1384" selection-end-column="50" />
+            <state relative-caret-position="393">
+              <caret line="1384" lean-forward="true" selection-start-line="1384" selection-end-line="1384" />
               <folding>
                 <element signature="e#0#137#0" expanded="true" />
               </folding>
@@ -97,10 +103,47 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/setting/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="331">
+              <caret line="78" column="13" selection-start-line="78" selection-start-column="4" selection-end-line="78" selection-end-column="13" />
+              <folding>
+                <element signature="e#0#28#0" expanded="true" />
+                <marker date="1535647694419" expanded="true" signature="1785:1790" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/setting/admin.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="359">
+              <caret line="29" column="47" selection-start-line="29" selection-start-column="47" selection-end-line="29" selection-end-column="47" />
+              <folding>
+                <element signature="e#0#32#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/warehouse/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="227">
+              <caret line="26" column="17" selection-start-line="26" selection-end-line="27" />
+              <folding>
+                <element signature="e#0#28#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/api/winit.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="288">
-              <caret line="64" column="19" selection-start-line="64" selection-start-column="8" selection-end-line="64" selection-end-column="19" />
+            <state relative-caret-position="119">
+              <caret line="162" column="18" lean-forward="true" selection-start-line="162" selection-start-column="18" selection-end-line="162" selection-end-column="18" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -109,12 +152,12 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/product/models.py">
+        <entry file="file://$PROJECT_DIR$/warehouse/admin.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="367">
-              <caret line="120" column="14" selection-start-line="120" selection-start-column="4" selection-end-line="120" selection-end-column="14" />
+            <state relative-caret-position="216">
+              <caret line="21" column="38" lean-forward="true" selection-start-line="21" selection-start-column="38" selection-end-line="21" selection-end-column="38" />
               <folding>
-                <element signature="e#0#28#0" expanded="true" />
+                <element signature="e#0#32#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -146,15 +189,18 @@
         <option value="$PROJECT_DIR$/product/models.py" />
         <option value="$PROJECT_DIR$/product/admin.py" />
         <option value="$PROJECT_DIR$/product/serializers.py" />
-        <option value="$PROJECT_DIR$/api/winit.py" />
-        <option value="$PROJECT_DIR$/setting/models.py" />
         <option value="$PROJECT_DIR$/setting/views.py" />
-        <option value="$PROJECT_DIR$/setting/admin.py" />
         <option value="$PROJECT_DIR$/setting/serializers.py" />
         <option value="$PROJECT_DIR$/iodogservice/urls.py" />
-        <option value="$PROJECT_DIR$/product/views.py" />
         <option value="$PROJECT_DIR$/product/task.py" />
+        <option value="$PROJECT_DIR$/warehouse/admin.py" />
         <option value="$PROJECT_DIR$/iodogservice/settings.py" />
+        <option value="$PROJECT_DIR$/warehouse/models.py" />
+        <option value="$PROJECT_DIR$/api/winit.py" />
+        <option value="$PROJECT_DIR$/product/views.py" />
+        <option value="$PROJECT_DIR$/setting/models.py" />
+        <option value="$PROJECT_DIR$/setting/task.py" />
+        <option value="$PROJECT_DIR$/setting/admin.py" />
       </list>
     </option>
   </component>
@@ -170,7 +216,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -186,11 +231,6 @@
             <path>
               <item name="iodogservice" type="b2602c69:ProjectViewProjectNode" />
               <item name="iodogservice" type="462c0819:PsiDirectoryNode" />
-              <item name="iodogservice" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="iodogservice" type="b2602c69:ProjectViewProjectNode" />
-              <item name="iodogservice" type="462c0819:PsiDirectoryNode" />
               <item name="product" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -201,13 +241,7 @@
             <path>
               <item name="iodogservice" type="b2602c69:ProjectViewProjectNode" />
               <item name="iodogservice" type="462c0819:PsiDirectoryNode" />
-              <item name="upload" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="iodogservice" type="b2602c69:ProjectViewProjectNode" />
-              <item name="iodogservice" type="462c0819:PsiDirectoryNode" />
-              <item name="upload" type="462c0819:PsiDirectoryNode" />
-              <item name="label" type="462c0819:PsiDirectoryNode" />
+              <item name="warehouse" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="iodogservice" type="b2602c69:ProjectViewProjectNode" />
@@ -217,6 +251,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -286,7 +321,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="64" y="-11" width="1377" height="912" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24963072" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -444,43 +478,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/setting/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="15" column="32" selection-start-line="15" selection-start-column="32" selection-end-line="15" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/setting/serializers.py">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/setting/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="313">
-          <caret line="42" column="42" lean-forward="true" selection-start-line="42" selection-start-column="42" selection-end-line="42" selection-end-column="42" />
-          <folding>
-            <element signature="e#0#28#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/product/serializers.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1206">
           <caret line="82" column="34" lean-forward="true" selection-start-line="82" selection-start-column="34" selection-end-line="82" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#38#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/api/winit.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="64" column="19" selection-start-line="64" selection-start-column="8" selection-end-line="64" selection-end-column="19" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -488,16 +492,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="540">
           <caret line="30" column="23" selection-start-line="30" selection-start-column="23" selection-end-line="30" selection-end-column="23" />
-          <folding>
-            <element signature="e#0#33#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/iodogservice/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="313">
-          <caret line="85" column="15" lean-forward="true" selection-start-line="85" selection-start-column="15" selection-end-line="85" selection-end-column="27" />
+        <state relative-caret-position="1278">
+          <caret line="85" column="15" selection-start-line="85" selection-start-column="15" selection-end-line="85" selection-end-column="27" />
           <folding>
             <element signature="e#648#689#0" expanded="true" />
           </folding>
@@ -506,8 +507,55 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/product/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="367">
-          <caret line="120" column="14" selection-start-line="120" selection-start-column="4" selection-end-line="120" selection-end-column="14" />
+        <state relative-caret-position="270">
+          <caret line="183" column="30" lean-forward="true" selection-start-line="183" selection-end-line="184" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/warehouse/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="21" column="38" lean-forward="true" selection-start-line="21" selection-start-column="38" selection-end-line="21" selection-end-column="38" />
+          <folding>
+            <element signature="e#0#32#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/iodogservice/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="162" column="49" lean-forward="true" selection-start-line="162" selection-start-column="49" selection-end-line="162" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/product/task.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="32" column="26" lean-forward="true" selection-start-line="29" selection-start-column="4" selection-end-line="32" selection-end-column="26" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/api/winit.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="162" column="18" lean-forward="true" selection-start-line="162" selection-start-column="18" selection-end-line="162" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/warehouse/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="227">
+          <caret line="26" column="17" selection-start-line="26" selection-end-line="27" />
           <folding>
             <element signature="e#0#28#0" expanded="true" />
           </folding>
@@ -516,28 +564,43 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/product/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="353">
-          <caret line="1384" column="50" lean-forward="true" selection-start-line="1384" selection-start-column="50" selection-end-line="1384" selection-end-column="50" />
+        <state relative-caret-position="393">
+          <caret line="1384" lean-forward="true" selection-start-line="1384" selection-end-line="1384" />
           <folding>
             <element signature="e#0#137#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/product/task.py">
+    <entry file="file://$PROJECT_DIR$/setting/task.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="142" column="30" selection-start-line="142" selection-start-column="4" selection-end-line="142" selection-end-column="30" />
+        <state relative-caret-position="461">
+          <caret line="103" column="27" selection-start-line="103" selection-start-column="27" selection-end-line="103" selection-end-column="27" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
+            <marker date="1535648900899" expanded="true" signature="224:225" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/iodogservice/settings.py">
+    <entry file="file://$PROJECT_DIR$/setting/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="205">
-          <caret line="169" column="56" selection-start-line="169" selection-start-column="56" selection-end-line="169" selection-end-column="56" />
+        <state relative-caret-position="331">
+          <caret line="78" column="13" selection-start-line="78" selection-start-column="4" selection-end-line="78" selection-end-column="13" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+            <marker date="1535647694419" expanded="true" signature="1785:1790" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/setting/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="359">
+          <caret line="29" column="47" selection-start-line="29" selection-start-column="47" selection-end-line="29" selection-end-column="47" />
+          <folding>
+            <element signature="e#0#32#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

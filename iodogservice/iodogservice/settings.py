@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'djcelery',
     'users',
     'product',
+    'warehouse',
     'setting'
 ]
 
@@ -159,7 +160,7 @@ JWT_AUTH = {
 import djcelery
 djcelery.setup_loader()
 BROKER_URL = 'redis://127.0.0.1:6379/0'
-CELERY_IMPORTS = ('product.task')
+CELERY_IMPORTS = ('product.task', 'setting.task')
 CELERY_TIMEZONE = TIME_ZONE
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 

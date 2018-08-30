@@ -9,11 +9,6 @@ class WinIt(object):
     """
     万邑通物流
     """
-    # TOKEN = '94341349A48B822AE921257FBE74A8B4'  # 万邑通账户token
-    # CLIENT_SECRET = 'NJG5NJFIOGMTN2MWYS00MTI2LTGYZWUTNTY1NZNHZDK1ZJCYMJE4MTIWMTI0NZUXOTC1NZK='  # 开发账户密钥
-    # CLIENT_ID = 'ODG1ZDHJZWITNWY1ZC00YJI1LTGYODCTY2M3OWVKNJZMYWNL'  # 开发账户id
-    # APP_KEY = '46526075@qq.com'  # 万邑联账户
-    # PLATFORM = 'IODOG'  # 开发账号代码
 
     def __init__(self, token, client_secret, client_id, app_key, platform):
         self.TOKEN = token
@@ -126,6 +121,52 @@ class WinIt(object):
             'singleItems': single_items,
             'labelType': label_type,
             'madeIn': made_in
+        }})
+
+        # 生成签名
+        self.generate_sign(self.req, self.TOKEN, self.CLIENT_SECRET)
+
+        # 添加请求报文信息
+        self.req.update({'client_id': self.CLIENT_ID})
+        self.req.update({'client_sign': self.client_sign})
+        self.req.update({'sign': self.sign})
+
+        # 发起请求
+        response = requests.post(url, data=json.dumps(self.req))
+        return response.text
+
+    def get_warehouse(self):
+        """
+        查询仓库列表
+        :return:
+        """
+        url = 'http://api.winit.com.cn/ADInterface/api'
+        self.req.update({'action': 'queryWarehouse'})
+        self.req.update({'data': {
+
+        }})
+
+        # 生成签名
+        self.generate_sign(self.req, self.TOKEN, self.CLIENT_SECRET)
+
+        # 添加请求报文信息
+        self.req.update({'client_id': self.CLIENT_ID})
+        self.req.update({'client_sign': self.client_sign})
+        self.req.update({'sign': self.sign})
+
+        # 发起请求
+        response = requests.post(url, data=json.dumps(self.req))
+        return response.text
+
+    def get_delivery_way(self, warehouse_id):
+        """
+        查询物流公司尾程渠道
+        :return:
+        """
+        url = 'http://api.winit.com.cn/ADInterface/api'
+        self.req.update({'action': 'queryDeliveryWay'})
+        self.req.update({'data': {
+            "warehouseID": warehouse_id
         }})
 
         # 生成签名

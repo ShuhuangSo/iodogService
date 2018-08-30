@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import LogisticsAuth, DevelopAuth
+from .models import LogisticsAuth, DevelopAuth, ThirdWarehouse, ThirdDelivery
 
 # Register your models here.
 
@@ -15,3 +15,17 @@ class LogisticsAuthAdmin(admin.ModelAdmin):
 class DevelopAuthAdmin(admin.ModelAdmin):
     list_display = ['api_code', 'api_name', 'client_id', 'client_secret', 'dp_code']
     search_fields = ['api_name', 'client_id', 'client_secret']
+
+
+@admin.register(ThirdWarehouse)
+class ThirdWarehouseAdmin(admin.ModelAdmin):
+    list_display = ['logistics_company', 'wh_code', 'wh_id', 'wh_name', 'country_code']
+    list_filter = ['logistics_company', 'country_code']
+    search_fields = ['wh_code', 'wh_id', 'wh_name']
+
+
+@admin.register(ThirdDelivery)
+class ThirdDeliveryAdmin(admin.ModelAdmin):
+    list_display = ['product_code', 'delivery_way', 'delivery_id', 'is_door_number', 'wh_id', 'is_active']
+    list_filter = ['is_door_number', 'is_active']
+    search_fields = ['product_code', 'delivery_way', 'delivery_id', 'wh_id']

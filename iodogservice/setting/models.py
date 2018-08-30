@@ -44,3 +44,43 @@ class DevelopAuth(models.Model):
 
     def __str__(self):
         return self.api_name
+
+
+class ThirdWarehouse(models.Model):
+    """
+    物流公司仓库列表(与物流公司同步)
+    """
+
+    logistics_company = models.CharField(max_length=50, verbose_name='物流公司名称', help_text='物流公司名称')
+    wh_code = models.CharField(max_length=80, verbose_name='仓库代码', help_text='仓库代码')
+    wh_id = models.CharField(max_length=80, verbose_name='仓库ID', help_text='仓库ID')
+    wh_name = models.CharField(max_length=80, verbose_name='仓库名称', help_text='仓库名称')
+    wh_address = models.CharField(max_length=200, null=True, blank=True, verbose_name='仓库地址', help_text='仓库地址')
+    country_code = models.CharField(max_length=20, null=True, blank=True, verbose_name='仓库所在国家代码', help_text='仓库所在国家代码')
+
+    class Meta:
+        verbose_name = '物流公司仓库列表'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.wh_name
+
+
+class ThirdDelivery(models.Model):
+    """
+    物流公司尾程渠道(与物流公司同步)
+    """
+
+    product_code = models.CharField(max_length=80, verbose_name='派送方式代码', help_text='派送方式代码')
+    delivery_way = models.CharField(max_length=200, verbose_name='派送方式名称', help_text='派送方式名称')
+    delivery_id = models.CharField(max_length=30, verbose_name='派送方式id', help_text='派送方式id')
+    is_door_number = models.BooleanField(default=False, verbose_name='派送方式是否门牌必选', help_text='派送方式是否门牌必选')
+    wh_id = models.CharField(max_length=30, verbose_name='海外仓仓库id', help_text='海外仓仓库id')
+    is_active = models.BooleanField(default=False, verbose_name='是否激活', help_text='是否激活')
+
+    class Meta:
+        verbose_name = '物流公司尾程渠道'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.delivery_way
