@@ -25,7 +25,8 @@ from product.views import SupplierProductViewSet, SetDefaultSupplierView, CheckV
 from product.views import ComboBulkOperation, ProductBulkOperation, RegProductBulkOperation, ProductBulkImport
 from product.views import VskuBulkImport, ComboBulkImport, VcomboBulkImport, SupplierBulkImport, SupplierProductListViewSet
 from product.views import SupplierProductBulkOperation, CheckSKU, ProductLabelPrint, Test
-from setting.views import LogisticsAuthViewSet
+from setting.views import LogisticsAuthViewSet, ThirdWarehouseViewSet
+from warehouse.views import WarehouseViewSet
 
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -38,8 +39,12 @@ router.register(r'api/supplier-product-list', SupplierProductListViewSet, base_n
 router.register(r'api/combopacks', ComboPackViewSet, base_name='combopacks')
 router.register(r'api/base-products', BaseProductViewSet, base_name='api/base-products')
 
+# 仓库模块
+router.register(r'api/warehouse-setting', WarehouseViewSet, base_name='api/warehouse-list')
+
 # 系统设置模块
 router.register(r'api/logistics-auth', LogisticsAuthViewSet, base_name='api/logistics-auth')
+router.register(r'api/third-warehouse', ThirdWarehouseViewSet, base_name='api/third-warehouse')
 
 
 urlpatterns = [
@@ -50,6 +55,7 @@ urlpatterns = [
     url(r'^api/login/', obtain_jwt_token),
     url(r'^upload/(?P<path>.*)$',  serve, {"document_root": settings.MEDIA_ROOT}),
 
+    # -----------------产品模块------------------
     # 供应商批量操作
     url(r'^api/suppliers-bulk/', SupplierBulkOperation.as_view(), name='suppliers-bulk'),
     # 检查供应商名称
@@ -84,5 +90,4 @@ urlpatterns = [
     url(r'^api/product-print/', ProductLabelPrint.as_view(), name='product-print'),
     # test
     url(r'^api/product-test/', Test.as_view(), name='product-test'),
-
 ]

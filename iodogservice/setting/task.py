@@ -87,7 +87,7 @@ def winit_get_delivery_way(warehouse_id):
 
             # 如果渠道已存在,检查更新渠道两个字段
             queryset = ThirdDelivery.objects.filter(delivery_id=delivery_id).count()
-            if queryset:
+            if queryset == 1:
                 delivery = ThirdDelivery.objects.get(delivery_id=delivery_id)
                 if delivery.delivery_way != delivery_way:
                     ThirdDelivery.objects.filter(delivery_id=delivery_id).update(delivery_way=delivery_way)
@@ -104,3 +104,15 @@ def winit_get_delivery_way(warehouse_id):
             ))
         if len(add_list):
             ThirdDelivery.objects.bulk_create(add_list)
+
+
+@task
+def winit_get_all_warehouse_delivery_way():
+    """
+    获取全部仓库物流方式
+    :return:
+    """
+
+    queryset = ThirdWarehouse.objects.filter(logistics_company='winit')
+    for i in queryset:
+        winit_get_delivery_way.delay(i.wh_id)

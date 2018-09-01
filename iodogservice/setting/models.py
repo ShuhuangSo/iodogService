@@ -57,6 +57,7 @@ class ThirdWarehouse(models.Model):
     wh_name = models.CharField(max_length=80, verbose_name='仓库名称', help_text='仓库名称')
     wh_address = models.CharField(max_length=200, null=True, blank=True, verbose_name='仓库地址', help_text='仓库地址')
     country_code = models.CharField(max_length=20, null=True, blank=True, verbose_name='仓库所在国家代码', help_text='仓库所在国家代码')
+    is_active = models.BooleanField(default=False, verbose_name='是否激活', help_text='是否激活')
 
     class Meta:
         verbose_name = '物流公司仓库列表'

@@ -19,8 +19,8 @@ class DevelopAuthAdmin(admin.ModelAdmin):
 
 @admin.register(ThirdWarehouse)
 class ThirdWarehouseAdmin(admin.ModelAdmin):
-    list_display = ['logistics_company', 'wh_code', 'wh_id', 'wh_name', 'country_code']
-    list_filter = ['logistics_company', 'country_code']
+    list_display = ['logistics_company', 'wh_code', 'wh_id', 'wh_name', 'country_code', 'is_active']
+    list_filter = ['logistics_company', 'country_code', 'is_active']
     search_fields = ['wh_code', 'wh_id', 'wh_name']
 
 
