@@ -26,7 +26,7 @@ from product.views import ComboBulkOperation, ProductBulkOperation, RegProductBu
 from product.views import VskuBulkImport, ComboBulkImport, VcomboBulkImport, SupplierBulkImport, SupplierProductListViewSet
 from product.views import SupplierProductBulkOperation, CheckSKU, ProductLabelPrint, Test
 from setting.views import LogisticsAuthViewSet, ThirdWarehouseViewSet
-from warehouse.views import WarehouseViewSet
+from warehouse.views import WarehouseViewSet, AddLocalWarehouse
 
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -90,4 +90,8 @@ urlpatterns = [
     url(r'^api/product-print/', ProductLabelPrint.as_view(), name='product-print'),
     # test
     url(r'^api/product-test/', Test.as_view(), name='product-test'),
+
+    # -----------------仓库模块------------------
+    # 新增本地仓
+    url(r'^api/warehouse-add-local/', AddLocalWarehouse.as_view(), name='warehouse-add-local'),
 ]
