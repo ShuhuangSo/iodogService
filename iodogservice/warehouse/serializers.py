@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Warehouse, WarehouseStock
+from .models import Warehouse, WarehouseStock, Position
 from product.models import Product
 
 
@@ -37,3 +37,12 @@ class WarehouseSerializer(serializers.ModelSerializer):
                   'return_phone', 'return_address', 'post_name', 'post_phone',
                   'post_address', 'is_active', 'wh_type', 'country_code',
                   'logistics_company', 'create_time', 'total_stock_num', 'total_value')
+
+
+class PositionSerializer(serializers.ModelSerializer):
+    """
+    仓位
+    """
+    class Meta:
+        model = Position
+        fields = ('id', 'po_code', 'is_active')

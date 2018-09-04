@@ -26,7 +26,7 @@ from product.views import ComboBulkOperation, ProductBulkOperation, RegProductBu
 from product.views import VskuBulkImport, ComboBulkImport, VcomboBulkImport, SupplierBulkImport, SupplierProductListViewSet
 from product.views import SupplierProductBulkOperation, CheckSKU, ProductLabelPrint, Test
 from setting.views import LogisticsAuthViewSet, ThirdWarehouseViewSet
-from warehouse.views import WarehouseViewSet, AddLocalWarehouse
+from warehouse.views import WarehouseViewSet, AddLocalWarehouse, AddPosition, PositionViewSet, UpdatePosition, BulkUpdatePositionStatus
 
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -41,6 +41,7 @@ router.register(r'api/base-products', BaseProductViewSet, base_name='api/base-pr
 
 # 仓库模块
 router.register(r'api/warehouse-setting', WarehouseViewSet, base_name='api/warehouse-list')
+router.register(r'api/position', PositionViewSet, base_name='api/position')
 
 # 系统设置模块
 router.register(r'api/logistics-auth', LogisticsAuthViewSet, base_name='api/logistics-auth')
@@ -94,4 +95,10 @@ urlpatterns = [
     # -----------------仓库模块------------------
     # 新增本地仓
     url(r'^api/warehouse-add-local/', AddLocalWarehouse.as_view(), name='warehouse-add-local'),
+    # 添加仓位
+    url(r'^api/position-add/', AddPosition.as_view(), name='position-add'),
+    # 修改仓位
+    url(r'^api/position-update/', UpdatePosition.as_view(), name='position-update'),
+    # 披露修改仓位状态
+    url(r'^api/position-bulk-update/', BulkUpdatePositionStatus.as_view(), name='position-bulk-update'),
 ]

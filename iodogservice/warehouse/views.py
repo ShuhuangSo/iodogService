@@ -6,11 +6,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Q
 import datetime
 from random import choice
 
-from .models import Warehouse
-from .serializers import WarehouseSerializer
+from .models import Warehouse, Position
+from .serializers import WarehouseSerializer, PositionSerializer
 
 
 class DefaultPagination(PageNumberPagination):
@@ -92,3 +93,108 @@ class AddLocalWarehouse(APIView):
         warehouse.save()
 
         return Response(status=status.HTTP_201_CREATED)
+
+
+class PositionViewSet(mixins.ListModelMixin,
+                      mixins.UpdateModelMixin,
+                      viewsets.GenericViewSet):
+    """
+    仓位列表
+    """
+    queryset = Position.objects.all()
+    serializer_class = PositionSerializer  # 序列化
+    pagination_class = DefaultPagination  # 分页
+
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)  # 过滤,搜索,排序
+    filter_fields = ('po_code', 'is_active', 'warehouse')  # 配置过滤字段
+    search_fields = ('po_code',)  # 配置搜索字段
+    ordering_fields = ('po_code',)  # 配置排序字段
+
+
+class AddPosition(APIView):
+    """
+    添加仓位
+    """
+
+    def post(self, request, *args, **kwargs):
+        data = self.request.data
+        id = data['wh_id']
+        codes = data['codes']
+
+        new_codes = []
+        warehouse = Warehouse.objects.get(id=id)
+
+        # 检查仓位编码是否存在
+        for i in codes:
+            queryset = Position.objects.filter(warehouse=warehouse, po_code=i)
+            if not queryset:
+                new_codes.append(i)
+
+        add_list = []
+        for i in new_codes:
+            add_list.append(Position(
+                po_code=i,
+                warehouse=warehouse
+            ))
+        Position.objects.bulk_create(add_list)
+
+        return Response(status=status.HTTP_201_CREATED)
+
+
+class UpdatePosition(APIView):
+    """
+    修改仓位
+    """
+
+    def post(self, request, *args, **kwargs):
+        data = self.request.data
+        id = data['wh_id']
+        p = data['position']
+        delete_list = data['delete_list']
+        warehouse = Warehouse.objects.get(id=id)
+
+        # 批量删除
+        if delete_list:
+            q = Q()
+            q.connector = 'OR'
+            for i in delete_list:
+                q.children.append(('id', i))
+            queryset = Position.objects.filter(warehouse=warehouse).filter(q)
+            queryset.delete()
+
+        # 如果仓位编码不一样，就修改
+        for i in p:
+            po_code = i['po_code']
+            id = i['id']
+            position = Position.objects.get(id=id)
+            if position.po_code == po_code:
+                continue
+            queryset = Position.objects.filter(warehouse=warehouse, po_code=po_code)
+            if queryset:
+                continue
+            Position.objects.filter(id=id).update(po_code=po_code)
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class BulkUpdatePositionStatus(APIView):
+    """
+    修改仓位状态
+    """
+
+    def post(self, request, *args, **kwargs):
+        data = self.request.data
+        ids = data['ids']
+        wh_id = data['wh_id']
+        is_active = data['is_active']
+        warehouse = Warehouse.objects.get(id=wh_id)
+
+        if ids:
+            q = Q()
+            q.connector = 'OR'
+            for i in ids:
+                q.children.append(('id', i))
+            queryset = Position.objects.filter(warehouse=warehouse).filter(q)
+            queryset.update(is_active=is_active)
+
+        return Response(status=status.HTTP_200_OK)
