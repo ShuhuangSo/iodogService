@@ -27,6 +27,7 @@ from product.views import VskuBulkImport, ComboBulkImport, VcomboBulkImport, Sup
 from product.views import SupplierProductBulkOperation, CheckSKU, ProductLabelPrint, Test
 from setting.views import LogisticsAuthViewSet, ThirdWarehouseViewSet
 from warehouse.views import WarehouseViewSet, AddLocalWarehouse, AddPosition, PositionViewSet, UpdatePosition, BulkUpdatePositionStatus
+from warehouse.views import WarehouseStockViewSet
 
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -42,6 +43,7 @@ router.register(r'api/base-products', BaseProductViewSet, base_name='api/base-pr
 # 仓库模块
 router.register(r'api/warehouse-setting', WarehouseViewSet, base_name='api/warehouse-list')
 router.register(r'api/position', PositionViewSet, base_name='api/position')
+router.register(r'api/warehouse-stock', WarehouseStockViewSet, base_name='api/warehouse-stock')
 
 # 系统设置模块
 router.register(r'api/logistics-auth', LogisticsAuthViewSet, base_name='api/logistics-auth')

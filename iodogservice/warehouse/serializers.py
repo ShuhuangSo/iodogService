@@ -46,3 +46,25 @@ class PositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Position
         fields = ('id', 'po_code', 'is_active')
+
+
+class WarehouseStockSerializer(serializers.ModelSerializer):
+    """
+    库存列表
+    """
+    image = serializers.SerializerMethodField()
+
+    # 获取产品图片
+    def get_image(self, obj):
+        company = obj.warehouse.company
+        queryset = Product.objects.filter(company=company, sku=obj.sku).count()
+        if queryset:
+            product = Product.objects.filter(company=company).get(sku=obj.sku)
+            return product.image if product.image else ''
+        return ''
+
+    class Meta:
+        model = WarehouseStock
+        fields = ('id', 'sku', 'cn_name', 'image', 'all_stock', 'available_qty', 'reserved_qty', 'on_way_qty', 'his_in_qty'
+                  , 'his_sell_qty', 'avg_sell_qty', 'avg_stock', 'doi', 'is_return', 'is_active'
+                  , 'is_prohibit', 'is_onsale', 'position', 'create_time', 'warehouse')

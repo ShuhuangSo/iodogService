@@ -10,8 +10,8 @@ from django.db.models import Q
 import datetime
 from random import choice
 
-from .models import Warehouse, Position
-from .serializers import WarehouseSerializer, PositionSerializer
+from .models import Warehouse, Position, WarehouseStock
+from .serializers import WarehouseSerializer, PositionSerializer, WarehouseStockSerializer
 
 
 class DefaultPagination(PageNumberPagination):
@@ -198,3 +198,20 @@ class BulkUpdatePositionStatus(APIView):
             queryset.update(is_active=is_active)
 
         return Response(status=status.HTTP_200_OK)
+
+
+class WarehouseStockViewSet(mixins.ListModelMixin,
+                            mixins.RetrieveModelMixin,
+                            viewsets.GenericViewSet):
+    """
+    库存列表
+    """
+    queryset = WarehouseStock.objects.all()
+    serializer_class = WarehouseStockSerializer  # 序列化
+    pagination_class = DefaultPagination  # 分页
+
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)  # 过滤,搜索,排序
+    filter_fields = ('is_return', 'is_onsale', 'warehouse')  # 配置过滤字段
+    search_fields = ('^sku', 'cn_name')  # 配置搜索字段
+    ordering_fields = ('all_stock', 'available_qty', 'reserved_qty', 'on_way_qty', 'his_in_qty'
+                       , 'his_sell_qty', 'avg_sell_qty', 'avg_stock', 'doi', 'create_time')  # 配置排序字段

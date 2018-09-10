@@ -141,17 +141,20 @@ class ComboSKUSerializer(serializers.ModelSerializer):
 
     # 获取产品名称
     def get_cn_name(self, obj):
-        product = Product.objects.get(sku=obj.sku)
+        company = obj.combo_pack.company
+        product = Product.objects.filter(company=company).get(sku=obj.sku)
         return product.cn_name
 
     # 获取产品图片
     def get_image(self, obj):
-        product = Product.objects.get(sku=obj.sku)
+        company = obj.combo_pack.company
+        product = Product.objects.filter(company=company).get(sku=obj.sku)
         return product.image if product.image else ''
 
     # 获取产品id
     def get_product_id(self, obj):
-        product = Product.objects.get(sku=obj.sku)
+        company = obj.combo_pack.company
+        product = Product.objects.filter(company=company).get(sku=obj.sku)
         return product.id
 
     class Meta:

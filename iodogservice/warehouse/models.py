@@ -45,6 +45,7 @@ class WarehouseStock(models.Model):
     """
 
     sku = models.CharField(max_length=50, verbose_name='产品sku编码', help_text='产品sku编码')
+    cn_name = models.CharField(max_length=100, null=True, blank=True, verbose_name='产品名称', help_text='产品名称')
     all_stock = models.IntegerField(default=0, verbose_name='总库存', help_text='总库存')
     available_qty = models.IntegerField(default=0, verbose_name='可用库存(os)', help_text='可用库存(os)')
     reserved_qty = models.IntegerField(default=0, verbose_name='待出库(os)', help_text='待出库(os)')
