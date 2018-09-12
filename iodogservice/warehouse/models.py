@@ -54,6 +54,14 @@ class WarehouseStock(models.Model):
     his_sell_qty = models.IntegerField(default=0, verbose_name='历史销量(os)', help_text='历史销量(os)')
     avg_sell_qty = models.CharField(max_length=50, null=True, blank=True, verbose_name='近30天平均销量(os)', help_text='近30天平均销量(os)')
     avg_stock = models.CharField(max_length=50, null=True, blank=True, verbose_name='近30天平均库存(os)', help_text='近30天平均库存(os)')
+    avg_sell_qty15 = models.CharField(max_length=50, null=True, blank=True, verbose_name='近15天平均销量(os)',
+                                      help_text='近15天平均销量(os)')
+    avg_stock15 = models.CharField(max_length=50, null=True, blank=True, verbose_name='近15天平均库存(os)',
+                                   help_text='近15天平均库存(os)')
+    avg_sell_qty7 = models.CharField(max_length=50, null=True, blank=True, verbose_name='近7天平均销量(os)',
+                                     help_text='近7天平均销量(os)')
+    avg_stock7 = models.CharField(max_length=50, null=True, blank=True, verbose_name='近7天平均库存(os)',
+                                  help_text='近7天平均库存(os)')
     doi = models.CharField(max_length=50, null=True, blank=True, verbose_name='DOI(os)', help_text='DOI(os)')
     is_return = models.BooleanField(default=False, verbose_name='是否退货库存(os)', help_text='是否退货库存(os)')
     is_active = models.BooleanField(default=True, verbose_name='产品是否有效(os)', help_text='产品是否有效(os)')

@@ -14,7 +14,7 @@ def winit_reg_product(products, company, country_code):
     :param country_code: 注册国家
     :return:
     """
-    logis_auth = LogisticsAuth.objects.get(company=company)
+    logis_auth = LogisticsAuth.objects.filter(company=company).get(logistics_code='winit')
     app_key = logis_auth.app_key  # 万邑联账户
     token = logis_auth.token  # 万邑通账户token
 
@@ -127,7 +127,7 @@ def winit_syn_pstatus_service():
 
     # 将产品列队查询
     for c in cp:
-        logis_auth = LogisticsAuth.objects.get(company=c)
+        logis_auth = LogisticsAuth.objects.filter(company=c).get(logistics_code='winit')
         app_key = logis_auth.app_key  # 万邑联账户
         token = logis_auth.token  # 万邑通账户token
 
@@ -155,7 +155,7 @@ def winit_syn_pconfirm_service():
 
     # 将产品列队查询
     for c in cp:
-        logis_auth = LogisticsAuth.objects.get(company=c)
+        logis_auth = LogisticsAuth.objects.filter(company=c).get(logistics_code='winit')
         app_key = logis_auth.app_key  # 万邑联账户
         token = logis_auth.token  # 万邑通账户token
 

@@ -66,5 +66,5 @@ class WarehouseStockSerializer(serializers.ModelSerializer):
     class Meta:
         model = WarehouseStock
         fields = ('id', 'sku', 'cn_name', 'image', 'all_stock', 'available_qty', 'reserved_qty', 'on_way_qty', 'his_in_qty'
-                  , 'his_sell_qty', 'avg_sell_qty', 'avg_stock', 'doi', 'is_return', 'is_active'
-                  , 'is_prohibit', 'is_onsale', 'position', 'create_time', 'warehouse')
+                  , 'his_sell_qty', 'avg_sell_qty', 'avg_stock', 'avg_sell_qty15', 'avg_stock15', 'avg_sell_qty7',
+                  'avg_stock7', 'doi', 'is_return','is_active', 'is_prohibit', 'is_onsale', 'position', 'create_time', 'warehouse')

@@ -1361,26 +1361,17 @@ class Test(APIView):
     """
     def get(self, request, *args, **kwargs):
 
-        # queryset = Product.objects.filter(product_reg_product__reg_product_reg_country__reg_status='CHECKING')
-        # cp = []
-        # for i in queryset:
-        #     if i.company not in cp:
-        #         cp.append(i.company)
+        # company = self.request.user.company
+        # app_key = '46526075@qq.com'  # 万邑联账户
+        # token = '94341349A48B822AE921257FBE74A8B4'  # 万邑通账户token
         #
-        # for c in cp:
-            # logis_auth = LogisticsAuth.objects.get(company=c)
-            # app_key = logis_auth.app_key  # 万邑联账户
-            # token = logis_auth.token  # 万邑通账户token
-            #
-            # develop_auth = DevelopAuth.objects.get(api_code=logis_auth.logistics_code)
-            # client_id = develop_auth.client_id  # 开发账户id
-            # client_secret = develop_auth.client_secret  # 开发账户密钥
-            # platform = develop_auth.dp_code  # 开发账号代码
-            #
-            # win_it = WinIt(token, client_secret, client_id, app_key, platform)
-
-            # winit_get_product('N288CR', c)
-        from setting.task import winit_get_all_warehouse_delivery_way
-        winit_get_all_warehouse_delivery_way()
+        # client_id = 'ODG1ZDHJZWITNWY1ZC00YJI1LTGYODCTY2M3OWVKNJZMYWNL'  # 开发账户id
+        # client_secret = 'NJG5NJFIOGMTN2MWYS00MTI2LTGYZWUTNTY1NZNHZDK1ZJCYMJE4MTIWMTI0NZUXOTC1NZK='  # 开发账户密钥
+        # platform = 'IODOG'  # 开发账号代码
+        # warehouse_id = '1000001'
+        # from warehouse.task import winit_get_warehouse_stock
+        # winit_get_warehouse_stock(token, client_secret, client_id, app_key, platform, warehouse_id, company)
+        from warehouse.task import winit_sync_warehouse_stock_service
+        winit_sync_warehouse_stock_service()
 
         return Response(status=status.HTTP_200_OK)

@@ -160,7 +160,7 @@ JWT_AUTH = {
 import djcelery
 djcelery.setup_loader()
 BROKER_URL = 'redis://127.0.0.1:6379/0'
-CELERY_IMPORTS = ('product.task', 'setting.task')
+CELERY_IMPORTS = ('product.task', 'setting.task', 'warehouse.task')
 CELERY_TIMEZONE = TIME_ZONE
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
@@ -175,6 +175,11 @@ CELERYBEAT_SCHEDULE = {
     '同步winit产品确认数据': {
         'task': 'product.task.winit_syn_pconfirm_service',
         'schedule': timedelta(seconds=30),
+        'args': ()
+    },
+    '同步winit仓库库存': {
+        'task': 'warehouse.task.winit_sync_warehouse_stock_service',
+        'schedule': timedelta(seconds=60),
         'args': ()
     },
 }

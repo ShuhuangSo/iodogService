@@ -180,3 +180,37 @@ class WinIt(object):
         # 发起请求
         response = requests.post(url, data=json.dumps(self.req))
         return response.text
+
+    def get_warehouse_stock(self, warehouse_id, warehouse_code, page_num):
+        """
+        查询海外仓库存
+        :return:
+        """
+        url = 'http://api.winit.com.cn/ADInterface/api'
+        self.req.update({'action': 'queryProductInventoryList4Page'})
+        self.req.update({'data': {
+            'inventoryType': 'Warehouse',
+            "warehouseID": warehouse_id,
+            'warehouseCode': warehouse_code,
+            'inReturnInventory': '',
+            'pageNum': page_num,
+            'pageSize': '100',
+            'productCode': '',
+            'isActive': 'Y',
+            'name': '',
+            'categoryID': '',
+            'DOITier': ''
+
+        }})
+
+        # 生成签名
+        self.generate_sign(self.req, self.TOKEN, self.CLIENT_SECRET)
+
+        # 添加请求报文信息
+        self.req.update({'client_id': self.CLIENT_ID})
+        self.req.update({'client_sign': self.client_sign})
+        self.req.update({'sign': self.sign})
+
+        # 发起请求
+        response = requests.post(url, data=json.dumps(self.req))
+        return response.text

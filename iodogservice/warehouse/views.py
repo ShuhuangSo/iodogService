@@ -201,6 +201,7 @@ class BulkUpdatePositionStatus(APIView):
 
 
 class WarehouseStockViewSet(mixins.ListModelMixin,
+                            mixins.UpdateModelMixin,
                             mixins.RetrieveModelMixin,
                             viewsets.GenericViewSet):
     """
@@ -214,4 +215,5 @@ class WarehouseStockViewSet(mixins.ListModelMixin,
     filter_fields = ('is_return', 'is_onsale', 'warehouse')  # 配置过滤字段
     search_fields = ('^sku', 'cn_name')  # 配置搜索字段
     ordering_fields = ('all_stock', 'available_qty', 'reserved_qty', 'on_way_qty', 'his_in_qty'
-                       , 'his_sell_qty', 'avg_sell_qty', 'avg_stock', 'doi', 'create_time')  # 配置排序字段
+                       , 'his_sell_qty', 'avg_sell_qty', 'avg_stock', 'doi', 'create_time',
+                       'avg_sell_qty15', 'avg_stock15', 'avg_sell_qty7', 'avg_stock7')  # 配置排序字段

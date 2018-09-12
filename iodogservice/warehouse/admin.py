@@ -13,7 +13,7 @@ class WarehouseAdmin(admin.ModelAdmin):
 
 @admin.register(WarehouseStock)
 class WarehouseStockAdmin(admin.ModelAdmin):
-    list_display = ['sku', 'all_stock', 'available_qty', 'reserved_qty', 'on_way_qty', 'doi', 'position', 'warehouse']
+    list_display = ['sku', 'cn_name', 'all_stock', 'available_qty', 'reserved_qty', 'on_way_qty', 'doi', 'position', 'warehouse']
     list_filter = ['warehouse']
     search_fields = ['sku', 'position']
 
