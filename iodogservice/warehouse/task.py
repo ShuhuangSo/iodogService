@@ -24,15 +24,20 @@ def winit_get_warehouse_stock(token, client_secret, client_id, app_key, platform
         res = json.loads(res)
         if res['code'] == 0:
             data = res['data']
-            p_list = data['list']
             page = data['page']
             total_records = page['TotalRows']  # 总记录数
             page_size = page['NumRows']  # 每页数量
             page_num = page['StartRow']  # 页码
+            # 如果仓库没有数据，则停止下载
+            if total_records == 0:
+                download_status = False
+                continue
+
             # 如果记录下载完，则停止下载
             if page_size * page_num >= total_records:
                 download_status = False
 
+            p_list = data['list']
             add_list = []
             if p_list:
                 for i in p_list:

@@ -1361,17 +1361,16 @@ class Test(APIView):
     """
     def get(self, request, *args, **kwargs):
 
-        # company = self.request.user.company
-        # app_key = '46526075@qq.com'  # 万邑联账户
-        # token = '94341349A48B822AE921257FBE74A8B4'  # 万邑通账户token
-        #
-        # client_id = 'ODG1ZDHJZWITNWY1ZC00YJI1LTGYODCTY2M3OWVKNJZMYWNL'  # 开发账户id
-        # client_secret = 'NJG5NJFIOGMTN2MWYS00MTI2LTGYZWUTNTY1NZNHZDK1ZJCYMJE4MTIWMTI0NZUXOTC1NZK='  # 开发账户密钥
-        # platform = 'IODOG'  # 开发账号代码
-        # warehouse_id = '1000001'
-        # from warehouse.task import winit_get_warehouse_stock
-        # winit_get_warehouse_stock(token, client_secret, client_id, app_key, platform, warehouse_id, company)
-        from warehouse.task import winit_sync_warehouse_stock_service
-        winit_sync_warehouse_stock_service()
+        company = self.request.user.company
+        app_key = '46526075@qq.com'  # 万邑联账户
+        token = '94341349A48B822AE921257FBE74A8B4'  # 万邑通账户token
+
+        client_id = 'ODG1ZDHJZWITNWY1ZC00YJI1LTGYODCTY2M3OWVKNJZMYWNL'  # 开发账户id
+        client_secret = 'NJG5NJFIOGMTN2MWYS00MTI2LTGYZWUTNTY1NZNHZDK1ZJCYMJE4MTIWMTI0NZUXOTC1NZK='  # 开发账户密钥
+        platform = 'IODOG'  # 开发账号代码
+        warehouse_id = '1012190'
+        warehouse_code = 'BE0001'
+        from warehouse.task import winit_get_warehouse_stock
+        winit_get_warehouse_stock(token, client_secret, client_id, app_key, platform, warehouse_id, warehouse_code, company)
 
         return Response(status=status.HTTP_200_OK)
