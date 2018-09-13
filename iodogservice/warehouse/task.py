@@ -48,17 +48,27 @@ def winit_get_warehouse_stock(token, client_secret, client_id, app_key, platform
                     on_way_qty = i['qtyOrdered']
                     his_in_qty = i['qtyHisIn']
                     his_sell_qty = i['qtySellHisOut']
-                    avg_sell_qty = i['averageSalesQty']
-                    avg_stock = i['averageStockQty']
-                    doi = i['DOI']
                     is_return = i['isReturnInventory']
                     is_prohibit = i['isprohibitoutbound']
 
                     # 退货sku没有以下字段
-                    avg_sell_qty15 = i['averageSalesQty15'] if is_return == 'N' else 0
-                    avg_stock15 = i['averageStockQty15'] if is_return == 'N' else 0
-                    avg_sell_qty7 = i['averageSalesQty7'] if is_return == 'N' else 0
-                    avg_stock7 = i['averageStockQty7'] if is_return == 'N' else 0
+                    avg_sell_qty15 = i['averageSalesQty15'] if is_return == 'N' else 0.0
+                    avg_stock15 = i['averageStockQty15'] if is_return == 'N' else 0.0
+                    avg_sell_qty7 = i['averageSalesQty7'] if is_return == 'N' else 0.0
+                    avg_stock7 = i['averageStockQty7'] if is_return == 'N' else 0.0
+
+                    # 将字符串转浮点
+                    doi = float(i['DOI']) if i['DOI'] != '' else 0.0
+                    avg_sell_qty = float(i['averageSalesQty']) if i['averageSalesQty'] != '' else 0.0
+                    avg_stock = float(i['averageStockQty']) if i['averageStockQty'] != '' else 0.0
+                    if avg_sell_qty15:
+                        avg_sell_qty15 = float(avg_sell_qty15)
+                    if avg_stock15:
+                        avg_stock15 = float(avg_stock15)
+                    if avg_sell_qty7:
+                        avg_sell_qty7 = float(avg_sell_qty7)
+                    if avg_stock7:
+                        avg_stock7 = float(avg_stock7)
 
                     # 检查该产品在本地对应仓库是否存在，存在则进行更新数据，不存在则创建
                     warehouse = Warehouse.objects.get(wh_id=warehouse_id)

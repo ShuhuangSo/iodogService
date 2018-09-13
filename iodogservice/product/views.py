@@ -1368,8 +1368,8 @@ class Test(APIView):
         client_id = 'ODG1ZDHJZWITNWY1ZC00YJI1LTGYODCTY2M3OWVKNJZMYWNL'  # 开发账户id
         client_secret = 'NJG5NJFIOGMTN2MWYS00MTI2LTGYZWUTNTY1NZNHZDK1ZJCYMJE4MTIWMTI0NZUXOTC1NZK='  # 开发账户密钥
         platform = 'IODOG'  # 开发账号代码
-        warehouse_id = '1012190'
-        warehouse_code = 'BE0001'
+        warehouse_id = '1000001'
+        warehouse_code = 'EWD'
         from warehouse.task import winit_get_warehouse_stock
         winit_get_warehouse_stock(token, client_secret, client_id, app_key, platform, warehouse_id, warehouse_code, company)
 
