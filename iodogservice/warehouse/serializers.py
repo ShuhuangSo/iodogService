@@ -53,6 +53,7 @@ class WarehouseStockSerializer(serializers.ModelSerializer):
     库存列表
     """
     image = serializers.SerializerMethodField()
+    product_id = serializers.SerializerMethodField()
 
     # 获取产品图片
     def get_image(self, obj):
@@ -62,9 +63,19 @@ class WarehouseStockSerializer(serializers.ModelSerializer):
             product = Product.objects.filter(company=company).get(sku=obj.sku)
             return product.image if product.image else ''
         return ''
+    # 获取产品id
+
+    def get_product_id(self, obj):
+        company = obj.warehouse.company
+        sku = obj.sku.rstrip('(return)') if obj.is_return else obj.sku
+        queryset = Product.objects.filter(company=company, sku=sku).count()
+        if queryset:
+            product = Product.objects.filter(company=company).get(sku=sku)
+            return product.id
+        return ''
 
     class Meta:
         model = WarehouseStock
-        fields = ('id', 'sku', 'cn_name', 'image', 'all_stock', 'available_qty', 'reserved_qty', 'on_way_qty', 'his_in_qty'
+        fields = ('id', 'sku', 'product_id', 'cn_name', 'image', 'all_stock', 'available_qty', 'reserved_qty', 'on_way_qty', 'his_in_qty'
                   , 'his_sell_qty', 'avg_sell_qty', 'avg_stock', 'avg_sell_qty15', 'avg_stock15', 'avg_sell_qty7',
-                  'avg_stock7', 'doi', 'is_return','is_active', 'is_prohibit', 'is_onsale', 'position', 'create_time', 'warehouse')
+                  'avg_stock7', 'doi', 'is_return', 'is_active', 'is_prohibit', 'is_onsale', 'position', 'create_time', 'warehouse')
