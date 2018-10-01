@@ -213,7 +213,6 @@ class WarehouseStockViewSet(mixins.ListModelMixin,
     pagination_class = DefaultPagination  # 分页
 
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)  # 过滤,搜索,排序
-    # filter_fields = ('is_return', 'is_onsale', 'warehouse')  # 配置过滤字段
     filter_class = WarehouseStockFilter
     search_fields = ('^sku', 'cn_name')  # 配置搜索字段
     ordering_fields = ('all_stock', 'position', 'available_qty', 'reserved_qty', 'on_way_qty', 'his_in_qty'

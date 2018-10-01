@@ -1372,15 +1372,7 @@ class Test(APIView):
         # warehouse_code = 'EWD'
         # from warehouse.task import winit_get_warehouse_stock
         # winit_get_warehouse_stock(token, client_secret, client_id, app_key, platform, warehouse_id, warehouse_code, company)
-        from warehouse.models import WarehouseStock, Warehouse
-        warehouse = Warehouse.objects.get(wh_code='LC0902189588')
-        add_list = []
-        for i in range(100):
-            add_list.append(WarehouseStock(
-                sku='T%d' % i,
-                cn_name='test%d' % i,
-                warehouse=warehouse
-            ))
-        WarehouseStock.objects.bulk_create(add_list)
+        a = 0.0 * 0.3
+        print(a)
 
         return Response(status=status.HTTP_200_OK)

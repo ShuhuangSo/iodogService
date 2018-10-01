@@ -14,4 +14,3 @@ class WarehouseStockFilter(filters.FilterSet):
     class Meta:
         model = WarehouseStock
         fields = ['is_return', 'is_onsale', 'warehouse', 'min_doi', 'max_doi']
-

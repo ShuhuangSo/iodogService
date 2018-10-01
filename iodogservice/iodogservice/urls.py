@@ -28,6 +28,7 @@ from product.views import SupplierProductBulkOperation, CheckSKU, ProductLabelPr
 from setting.views import LogisticsAuthViewSet, ThirdWarehouseViewSet
 from warehouse.views import WarehouseViewSet, AddLocalWarehouse, AddPosition, PositionViewSet, UpdatePosition, BulkUpdatePositionStatus
 from warehouse.views import WarehouseStockViewSet
+from purchase.views import CalcRefillPromote, RefillPromoteViewSet, RefillSettingViewSet
 
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -48,6 +49,10 @@ router.register(r'api/warehouse-stock', WarehouseStockViewSet, base_name='api/wa
 # 系统设置模块
 router.register(r'api/logistics-auth', LogisticsAuthViewSet, base_name='api/logistics-auth')
 router.register(r'api/third-warehouse', ThirdWarehouseViewSet, base_name='api/third-warehouse')
+
+# 补货管理模块
+router.register(r'api/refill-promote', RefillPromoteViewSet, base_name='api/refill-promote')
+router.register(r'api/refill-setting', RefillSettingViewSet, base_name='api/refill-setting')
 
 
 urlpatterns = [
@@ -103,4 +108,8 @@ urlpatterns = [
     url(r'^api/position-update/', UpdatePosition.as_view(), name='position-update'),
     # 披露修改仓位状态
     url(r'^api/position-bulk-update/', BulkUpdatePositionStatus.as_view(), name='position-bulk-update'),
+
+    # -----------------补货管理模块------------------
+    # 补货计算
+    url(r'^api/refill-calc/', CalcRefillPromote.as_view(), name='refill-calc'),
 ]

@@ -58,13 +58,14 @@ class WarehouseStockSerializer(serializers.ModelSerializer):
     # 获取产品图片
     def get_image(self, obj):
         company = obj.warehouse.company
-        queryset = Product.objects.filter(company=company, sku=obj.sku).count()
+        sku = obj.sku.rstrip('(return)') if obj.is_return else obj.sku
+        queryset = Product.objects.filter(company=company, sku=sku).count()
         if queryset:
-            product = Product.objects.filter(company=company).get(sku=obj.sku)
+            product = Product.objects.filter(company=company).get(sku=sku)
             return product.image if product.image else ''
         return ''
-    # 获取产品id
 
+    # 获取产品id
     def get_product_id(self, obj):
         company = obj.warehouse.company
         sku = obj.sku.rstrip('(return)') if obj.is_return else obj.sku
